@@ -15,6 +15,14 @@
     },
     "s3Key": {
       "Type": "String"
+    },
+    "storageitemsTableName": {
+      "Type": "String",
+      "Default": "storageitemsTableName"
+    },
+    "storageitemsTableArn": {
+      "Type": "String",
+      "Default": "storageitemsTableArn"
     }
   },
   "Conditions": {
@@ -89,12 +97,12 @@
         "RoleName": {
           "Fn::If": [
             "ShouldNotCreateEnvResources",
-            "awsomebuilderLambdaRole94aa2818",
+            "awsomebuilderLambdaRole50843756",
             {
               "Fn::Join": [
                 "",
                 [
-                  "awsomebuilderLambdaRole94aa2818",
+                  "awsomebuilderLambdaRole50843756",
                   "-",
                   {
                     "Ref": "env"
@@ -160,6 +168,34 @@
                   }
                 ]
               }
+            },
+            {
+              "Effect": "Allow",
+              "Action": [
+                "dynamodb:DescribeTable",
+                "dynamodb:GetItem",
+                "dynamodb:Query",
+                "dynamodb:Scan",
+                "dynamodb:PutItem",
+                "dynamodb:UpdateItem",
+                "dynamodb:DeleteItem"
+              ],
+              "Resource": [
+                {
+                  "Ref": "storageitemsTableArn"
+                },
+                {
+                  "Fn::Join": [
+                    "/",
+                    [
+                      {
+                        "Ref": "storageitemsTableArn"
+                      },
+                      "index/*"
+                    ]
+                  ]
+                }
+              ]
             }
           ]
         }

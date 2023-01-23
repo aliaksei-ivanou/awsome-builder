@@ -13,5 +13,15 @@ export type AmplifyDependentResourcesAttributes = {
             "ApiName": "string",
             "ApiId": "string"
         }
+    },
+    "storage": {
+        "itemsTable": {
+            "Name": "string",
+            "Arn": "string",
+            "StreamArn": "string",
+            "PartitionKeyName": "string",
+            "PartitionKeyType": "string",
+            "Region": "string"
+        }
     }
 }

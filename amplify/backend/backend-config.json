@@ -4,7 +4,20 @@
       "build": true,
       "providerPlugin": "awscloudformation",
       "service": "Lambda",
-      "dependsOn": []
+      "dependsOn": [
+        {
+          "category": "storage",
+          "resourceName": "itemsTable",
+          "attributes": [
+            "Name",
+            "Arn"
+          ],
+          "attributeEnvMap": {
+            "Name": "TABLE_NAME",
+            "Arn": "TABLE_ARN"
+          }
+        }
+      ]
     }
   },
   "auth": {},
@@ -22,6 +35,12 @@
           ]
         }
       ]
+    }
+  },
+  "storage": {
+    "itemsTable": {
+      "service": "DynamoDB",
+      "providerPlugin": "awscloudformation"
     }
   }
 }
