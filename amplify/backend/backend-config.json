@@ -1,46 +1,70 @@
 {
-  "function": {
-    "itemsLambda": {
-      "build": true,
-      "providerPlugin": "awscloudformation",
-      "service": "Lambda",
+  "api": {
+    "itemsApi": {
       "dependsOn": [
         {
-          "category": "storage",
-          "resourceName": "itemsTable",
           "attributes": [
             "Name",
             "Arn"
           ],
-          "attributeEnvMap": {
-            "Name": "TABLE_NAME",
-            "Arn": "TABLE_ARN"
-          }
+          "category": "function",
+          "resourceName": "itemsLambda"
         }
-      ]
+      ],
+      "providerPlugin": "awscloudformation",
+      "service": "API Gateway"
     }
   },
   "auth": {},
-  "api": {
-    "itemsApi": {
-      "service": "API Gateway",
-      "providerPlugin": "awscloudformation",
+  "function": {
+    "itemsLambda": {
+      "build": true,
       "dependsOn": [
         {
-          "category": "function",
-          "resourceName": "itemsLambda",
+          "attributeEnvMap": {
+            "Arn": "TABLE_ARN",
+            "Name": "TABLE_NAME"
+          },
           "attributes": [
             "Name",
             "Arn"
-          ]
+          ],
+          "category": "storage",
+          "resourceName": "itemsTable"
+        }
+      ],
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda"
+    }
+  },
+  "hosting": {
+    "S3AndCloudFront": {
+      "providerPlugin": "awscloudformation",
+      "service": "S3AndCloudFront"
+    }
+  },
+  "parameters": {
+    "AMPLIFY_function_itemsLambda_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "itemsLambda"
+        }
+      ]
+    },
+    "AMPLIFY_function_itemsLambda_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "itemsLambda"
         }
       ]
     }
   },
   "storage": {
     "itemsTable": {
-      "service": "DynamoDB",
-      "providerPlugin": "awscloudformation"
+      "providerPlugin": "awscloudformation",
+      "service": "DynamoDB"
     }
   }
 }
