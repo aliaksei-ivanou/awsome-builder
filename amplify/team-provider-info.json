@@ -23,20 +23,10 @@
           "tokenIssuer": "https://dev-56pajuydgx8hdw3g.us.auth0.com/",
           "jwksUri": "https://dev-56pajuydgx8hdw3g.us.auth0.com/.well-known/jwks.json",
           "audience": "xrdrGrLBmYuGKTqhgIzU98LyO2pApFI0"
-        },
-        "ordersLambda": {
-          "deploymentBucketName": "amplify-awsomebuilder-dev-125918-deployment",
-          "s3Key": "amplify-builds/ordersLambda-526b4945587437796a77-build.zip"
-        },
-        "documentsLambda": {
-          "deploymentBucketName": "amplify-awsomebuilder-dev-125918-deployment",
-          "s3Key": "amplify-builds/documentsLambda-65544b43656c7047354f-build.zip"
         }
       },
       "api": {
-        "itemsApi": {},
-        "ordersApi": {},
-        "documentsApi": {}
+        "itemsApi": {}
       },
       "storage": {
         "itemsTable": {},
