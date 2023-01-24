@@ -13,6 +13,20 @@
       ],
       "providerPlugin": "awscloudformation",
       "service": "API Gateway"
+    },
+    "ordersApi": {
+      "dependsOn": [
+        {
+          "attributes": [
+            "Name",
+            "Arn"
+          ],
+          "category": "function",
+          "resourceName": "ordersLambda"
+        }
+      ],
+      "providerPlugin": "awscloudformation",
+      "service": "API Gateway"
     }
   },
   "auth": {},
@@ -37,6 +51,43 @@
           ],
           "category": "storage",
           "resourceName": "itemsTable"
+        }
+      ],
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda"
+    },
+    "ordersLambda": {
+      "build": true,
+      "dependsOn": [
+        {
+          "attributeEnvMap": {
+            "Arn": "TABLE_ARN",
+            "Name": "TABLE_NAME"
+          },
+          "attributes": [
+            "Name",
+            "Arn"
+          ],
+          "category": "storage",
+          "resourceName": "ordersTable"
+        },
+        {
+          "attributes": [
+            "Name",
+            "Arn",
+            "StreamArn"
+          ],
+          "category": "storage",
+          "resourceName": "itemsTable"
+        },
+        {
+          "attributes": [
+            "Name",
+            "Arn",
+            "StreamArn"
+          ],
+          "category": "storage",
+          "resourceName": "ordersTable"
         }
       ],
       "providerPlugin": "awscloudformation",
@@ -105,10 +156,30 @@
           "resourceName": "itemsLambda"
         }
       ]
+    },
+    "AMPLIFY_function_ordersLambda_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "ordersLambda"
+        }
+      ]
+    },
+    "AMPLIFY_function_ordersLambda_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "ordersLambda"
+        }
+      ]
     }
   },
   "storage": {
     "itemsTable": {
+      "providerPlugin": "awscloudformation",
+      "service": "DynamoDB"
+    },
+    "ordersTable": {
       "providerPlugin": "awscloudformation",
       "service": "DynamoDB"
     }

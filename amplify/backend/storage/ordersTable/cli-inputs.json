@@ -1,0 +1,14 @@
+{
+  "resourceName": "ordersTable",
+  "tableName": "ordersTable",
+  "partitionKey": {
+    "fieldName": "order_id",
+    "fieldType": "string"
+  },
+  "sortKey": {
+    "fieldName": "product_id",
+    "fieldType": "string"
+  },
+  "gsi": [],
+  "triggerFunctions": []
+}

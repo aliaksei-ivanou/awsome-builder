@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "storage": {
+      "itemsTable": [
+        "read",
+        "update"
+      ],
+      "ordersTable": [
+        "create",
+        "read",
+        "update",
+        "delete"
+      ]
+    }
+  },
+  "lambdaLayers": []
+}
