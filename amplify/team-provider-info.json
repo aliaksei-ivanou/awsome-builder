@@ -15,7 +15,7 @@
       "function": {
         "itemsLambda": {
           "deploymentBucketName": "amplify-awsomebuilder-dev-125918-deployment",
-          "s3Key": "amplify-builds/itemsLambda-664a7330564e6b395450-build.zip"
+          "s3Key": "amplify-builds/itemsLambda-7369693634717a654868-build.zip"
         }
       },
       "api": {
