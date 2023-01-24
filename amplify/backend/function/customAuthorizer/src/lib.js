@@ -27,8 +27,6 @@ const authorize = (methodArn, roles) => {
     resource += apiGatewayArnTmp[3];
   }
 
-  // Perform authorization to return the Allow policy for correct parameters and
-  // the 'Unauthorized' error, otherwise.
   if (roles.includes("Admin")) {
     // Admin can do anything
     return getPolicyDocument("Allow", methodArn);
