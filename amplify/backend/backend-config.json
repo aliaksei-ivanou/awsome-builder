@@ -17,6 +17,12 @@
   },
   "auth": {},
   "function": {
+    "customAuthorizer": {
+      "build": true,
+      "dependsOn": [],
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda"
+    },
     "itemsLambda": {
       "build": true,
       "dependsOn": [
@@ -44,6 +50,46 @@
     }
   },
   "parameters": {
+    "AMPLIFY_function_customAuthorizer_audience": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "customAuthorizer"
+        }
+      ]
+    },
+    "AMPLIFY_function_customAuthorizer_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "customAuthorizer"
+        }
+      ]
+    },
+    "AMPLIFY_function_customAuthorizer_jwksUri": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "customAuthorizer"
+        }
+      ]
+    },
+    "AMPLIFY_function_customAuthorizer_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "customAuthorizer"
+        }
+      ]
+    },
+    "AMPLIFY_function_customAuthorizer_tokenIssuer": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "customAuthorizer"
+        }
+      ]
+    },
     "AMPLIFY_function_itemsLambda_deploymentBucketName": {
       "usedBy": [
         {

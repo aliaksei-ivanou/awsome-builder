@@ -1,0 +1,17 @@
+{
+  "lambdaLayers": [],
+  "environmentVariableList": [
+    {
+      "cloudFormationParameterName": "tokenIssuer",
+      "environmentVariableName": "TOKEN_ISSUER"
+    },
+    {
+      "cloudFormationParameterName": "jwksUri",
+      "environmentVariableName": "JWKS_URI"
+    },
+    {
+      "cloudFormationParameterName": "audience",
+      "environmentVariableName": "AUDIENCE"
+    }
+  ]
+}
