@@ -27,11 +27,16 @@
         "ordersLambda": {
           "deploymentBucketName": "amplify-awsomebuilder-dev-125918-deployment",
           "s3Key": "amplify-builds/ordersLambda-526b4945587437796a77-build.zip"
+        },
+        "documentsLambda": {
+          "deploymentBucketName": "amplify-awsomebuilder-dev-125918-deployment",
+          "s3Key": "amplify-builds/documentsLambda-65544b43656c7047354f-build.zip"
         }
       },
       "api": {
         "itemsApi": {},
-        "ordersApi": {}
+        "ordersApi": {},
+        "documentsApi": {}
       },
       "storage": {
         "itemsTable": {},

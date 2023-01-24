@@ -1,5 +1,19 @@
 {
   "api": {
+    "documentsApi": {
+      "dependsOn": [
+        {
+          "attributes": [
+            "Name",
+            "Arn"
+          ],
+          "category": "function",
+          "resourceName": "documentsLambda"
+        }
+      ],
+      "providerPlugin": "awscloudformation",
+      "service": "API Gateway"
+    },
     "itemsApi": {
       "dependsOn": [
         {
@@ -34,6 +48,25 @@
     "customAuthorizer": {
       "build": true,
       "dependsOn": [],
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda"
+    },
+    "documentsLambda": {
+      "build": true,
+      "dependsOn": [
+        {
+          "attributeEnvMap": {
+            "Arn": "TABLE_ARN",
+            "Name": "TABLE_NAME"
+          },
+          "attributes": [
+            "Name",
+            "Arn"
+          ],
+          "category": "storage",
+          "resourceName": "itemsTable"
+        }
+      ],
       "providerPlugin": "awscloudformation",
       "service": "Lambda"
     },
@@ -138,6 +171,22 @@
         {
           "category": "function",
           "resourceName": "customAuthorizer"
+        }
+      ]
+    },
+    "AMPLIFY_function_documentsLambda_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "documentsLambda"
+        }
+      ]
+    },
+    "AMPLIFY_function_documentsLambda_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "documentsLambda"
         }
       ]
     },
