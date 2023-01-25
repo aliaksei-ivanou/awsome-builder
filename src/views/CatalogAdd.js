@@ -27,7 +27,6 @@ export const CatalogAddComponent = () => {
     getAccessTokenWithPopup,
     user,
   } = useAuth0();
-  const token = getAccessTokenSilently();
 
   const roles = user.anycompany_roles;
 
@@ -67,6 +66,7 @@ export const CatalogAddComponent = () => {
   };
 
   const postProduct = async () => {
+    const token = await getAccessTokenSilently();
     const apiName = "itemsApi";
     const path = "/items";
     const myInit = {

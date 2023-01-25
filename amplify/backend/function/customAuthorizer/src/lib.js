@@ -4,13 +4,13 @@ const jwksClient = require("jwks-rsa");
 const jwt = require("jsonwebtoken");
 const util = require("util");
 
-const getPolicyDocument = (effect, resource) => {
+const getPolicyDocument = (resource) => {
   const policyDocument = {
     Version: "2012-10-17", // default version
     Statement: [
       {
         Action: "execute-api:Invoke", // default action
-        Effect: effect,
+        Effect: "Allow",
         Resource: resource,
       },
     ],
@@ -18,34 +18,28 @@ const getPolicyDocument = (effect, resource) => {
   return policyDocument;
 };
 
-const authorize = (methodArn, roles) => {
-  var tmp = methodArn.split(":");
-  var apiGatewayArnTmp = tmp[5].split("/");
-  var method = apiGatewayArnTmp[2];
-  var resource = "/"; // root resource
-  if (apiGatewayArnTmp[3]) {
-    resource += apiGatewayArnTmp[3];
-  }
+const policies = {
+  admin: getPolicyDocument("*"),
+  contractor: getPolicyDocument(
+    "arn:aws:execute-api:us-east-2:247045843940:g6i5cr5cjd/ESTestInvoke-stage/GET/documents"
+  ),
+  wholesaler: getPolicyDocument([
+    "arn:aws:execute-api:us-east-2:247045843940:g6i5cr5cjd/ESTestInvoke-stage/GET/documents",
+    "arn:aws:execute-api:us-east-2:247045843940:g6i5cr5cjd/ESTestInvoke-stage/*/orders",
+    "arn:aws:execute-api:us-east-2:247045843940:g6i5cr5cjd/ESTestInvoke-stage/*/items",
+  ]),
+  default: getPolicyDocument(""),
+};
 
+const authorize = (roles) => {
   if (roles.includes("Admin")) {
-    // Admin can do anything
-    return getPolicyDocument("Allow", methodArn);
-  } else if (
-    // Contractor can only get documents
-    roles.includes("Contractor") &&
-    method === "GET" &&
-    resource.includes("documents")
-  ) {
-    return getPolicyDocument("Allow", methodArn);
-  } else if (
-    // Wholesaler can only get documents and manage orders
-    roles.includes("Wholesaler") &&
-    ((method === "GET" && resource.includes("documents")) ||
-      resource.includes("orders"))
-  ) {
-    return getPolicyDocument("Allow", methodArn);
+    return policies.admin;
+  } else if (roles.includes("Contractor")) {
+    return policies.contractor;
+  } else if (roles.includes("Wholesaler")) {
+    return policies.wholesaler;
   } else {
-    return getPolicyDocument("Deny", methodArn);
+    return policies.default;
   }
 };
 
@@ -91,7 +85,7 @@ module.exports.authenticate = (params) => {
     })
     .then((decoded) => ({
       principalId: decoded.sub,
-      policyDocument: authorize(params.methodArn, decoded.anycompany_roles),
+      policyDocument: authorize(decoded.anycompany_roles),
       context: { scope: decoded.scope },
     }));
 };
