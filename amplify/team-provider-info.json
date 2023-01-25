@@ -15,14 +15,14 @@
       "function": {
         "itemsLambda": {
           "deploymentBucketName": "amplify-awsomebuilder-dev-125918-deployment",
-          "s3Key": "amplify-builds/itemsLambda-7369693634717a654868-build.zip"
+          "s3Key": "amplify-builds/itemsLambda-514a5a30517475335134-build.zip"
         },
         "customAuthorizer": {
           "deploymentBucketName": "amplify-awsomebuilder-dev-125918-deployment",
           "s3Key": "amplify-builds/customAuthorizer-365a6979657338323855-build.zip",
           "tokenIssuer": "https://dev-56pajuydgx8hdw3g.us.auth0.com/",
           "jwksUri": "https://dev-56pajuydgx8hdw3g.us.auth0.com/.well-known/jwks.json",
-          "audience": "xrdrGrLBmYuGKTqhgIzU98LyO2pApFI0"
+          "audience": "https://g6i5cr5cjd.execute-api.us-east-2.amazonaws.com/dev"
         },
         "ordersLambda": {
           "deploymentBucketName": "amplify-awsomebuilder-dev-125918-deployment",
