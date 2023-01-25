@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Button, Alert } from "reactstrap";
 import Highlight from "../components/Highlight";
 import { useAuth0, withAuthenticationRequired } from "@auth0/auth0-react";
@@ -9,7 +9,6 @@ export const CatalogComponent = () => {
     "https://g6i5cr5cjd.execute-api.us-east-2.amazonaws.com/dev";
 
   const [state, setState] = useState({
-    data_fetched: false,
     authorized: true,
     showResult: false,
     apiMessage: "",
@@ -59,24 +58,38 @@ export const CatalogComponent = () => {
     await getItems();
   };
 
+  const authorized = () => {
+    if (roles && roles.includes("Admin")) {
+      return true;
+    } else {
+      return false;
+    }
+  };
+
   const getItems = async () => {
     try {
-      const token = await getAccessTokenSilently();
-
-      const response = await fetch(`${apiOrigin}/items`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      const responseData = await response.json();
-
-      setState({
-        ...state,
-        showResult: true,
-        apiMessage: responseData,
-        data_fetched: true,
-      });
+      if (authorized()) {
+        console.log("User is authorized");
+        const token = await getAccessTokenSilently();
+        const response = await fetch(`${apiOrigin}/items`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        const responseData = await response.json();
+        setState({
+          ...state,
+          showResult: true,
+          apiMessage: responseData,
+        });
+      } else {
+        console.log("User is not authorized");
+        setState({
+          ...state,
+          showResult: false,
+          authorized: false,
+        });
+      }
     } catch (error) {
       setState({
         ...state,
@@ -90,32 +103,9 @@ export const CatalogComponent = () => {
     fn();
   };
 
-  const authorize = () => {
-    if (roles && roles.includes("Admin")) {
-      return true;
-    } else {
-      return false;
-    }
-  };
-
-  const fetch_data = () => {
-    if (authorize()) {
-      console.log("User is authorized");
-      getItems();
-    } else {
-      console.log("User is not authorized");
-      setState({
-        ...state,
-        showResult: false,
-        authorized: false,
-        data_fetched: true,
-      });
-    }
-  };
-
-  if (!state.data_fetched) {
-    fetch_data();
-  }
+  useEffect(() => {
+    getItems();
+  }, []);
 
   return (
     <>
