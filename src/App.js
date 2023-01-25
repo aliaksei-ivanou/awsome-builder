@@ -8,6 +8,7 @@ import Footer from "./components/Footer";
 import Home from "./views/Home";
 import Profile from "./views/Profile";
 import Catalog from "./views/Catalog";
+import CatalogAdd from "./views/CatalogAdd";
 import { useAuth0 } from "@auth0/auth0-react";
 import history from "./utils/history";
 
@@ -37,7 +38,8 @@ const App = () => {
           <Switch>
             <Route path="/" exact component={Home} />
             <Route path="/profile" component={Profile} />
-            <Route path="/catalog" component={Catalog} />
+            <Route path="/catalog" exact component={Catalog} />
+            <Route path="/catalog/add-product" component={CatalogAdd} />
           </Switch>
         </Container>
         <Footer />

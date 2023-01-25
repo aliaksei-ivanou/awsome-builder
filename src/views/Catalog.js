@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { Button, Alert } from "reactstrap";
-import Highlight from "../components/Highlight";
 import { useAuth0, withAuthenticationRequired } from "@auth0/auth0-react";
 import Loading from "../components/Loading";
+import { getConfig } from "../config";
+import { authorized } from "../utils/authorization";
 
 export const CatalogComponent = () => {
-  const apiOrigin =
-    "https://g6i5cr5cjd.execute-api.us-east-2.amazonaws.com/dev";
+  const apiOrigin = getConfig().audience;
 
   const [state, setState] = useState({
     authorized: true,
@@ -58,20 +58,19 @@ export const CatalogComponent = () => {
     await getItems();
   };
 
-  const authorized = () => {
-    if (roles && roles.includes("Admin")) {
-      return true;
-    } else {
-      return false;
-    }
+  const handle = (e, fn) => {
+    e.preventDefault();
+    fn();
   };
 
   const getItems = async () => {
+    const method = "GET";
+    const path = "/items";
     try {
-      if (authorized()) {
+      if (authorized(roles, path, method)) {
         console.log("User is authorized");
         const token = await getAccessTokenSilently();
-        const response = await fetch(`${apiOrigin}/items`, {
+        const response = await fetch(`${apiOrigin}${path}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -96,11 +95,6 @@ export const CatalogComponent = () => {
         error: error.error,
       });
     }
-  };
-
-  const handle = (e, fn) => {
-    e.preventDefault();
-    fn();
   };
 
   useEffect(() => {
@@ -140,15 +134,15 @@ export const CatalogComponent = () => {
           </Alert>
         )}
         <h1>Widgets Catalog</h1>
-        <p className="lead">Manage the catalog items.</p>
+        <p className="lead">Manage the catalog items</p>
       </div>
 
       <div className="result-block-container">
         {state.showResult && (
-          <div className="items-block">
+          <div>
             <Button
               color="primary"
-              onClick={getItems}
+              onClick={() => (window.location.href = "/catalog/add-product")}
               style={{ float: "right" }}
             >
               Add Product
@@ -175,10 +169,6 @@ export const CatalogComponent = () => {
                 ))}
               </tbody>
             </table>
-            <h6 className="muted">Raw JSON</h6>
-            <Highlight>
-              <span>{JSON.stringify(state.apiMessage, null, 2)}</span>
-            </Highlight>
           </div>
         )}
       </div>

@@ -33,3 +33,21 @@
 .result-block-container .result-block {
   opacity: 1;
 }
+
+.item-input-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: left;
+}
+
+.item-input {
+  width: 100%;
+  margin-bottom: 1rem;
+}
+
+.item-description {
+  margin-bottom: 1rem;
+  /* header 2 */
+  font-size: 1.5rem;
+}
