@@ -11,6 +11,8 @@ const awsServerlessExpressMiddleware = require("aws-serverless-express/middlewar
 const bodyParser = require("body-parser");
 const express = require("express");
 
+const { v4: uuidv4 } = require("uuid");
+
 AWS.config.update({ region: process.env.TABLE_REGION });
 
 const dynamodb = new AWS.DynamoDB.DocumentClient();
@@ -202,7 +204,14 @@ app.post(path, function (req, res) {
 
   let putItemParams = {
     TableName: tableName,
-    Item: req.body,
+    Item: {
+      product_id: uuidv4(),
+      productDescription: req.body.description,
+      productDocumentation: req.body.documentation,
+      productName: req.body.name,
+      productPrice: req.body.price,
+      productQuantity: req.body.quantity,
+    },
   };
   dynamodb.put(putItemParams, (err, data) => {
     if (err) {

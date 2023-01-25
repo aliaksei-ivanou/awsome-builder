@@ -48,6 +48,10 @@
 
 .item-description {
   margin-bottom: 1rem;
-  /* header 2 */
   font-size: 1.5rem;
+}
+
+.text-input {
+  width: 100%;
+  margin-bottom: 1rem;
 }

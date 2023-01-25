@@ -1,17 +1,24 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Button, Alert } from "reactstrap";
 import { getConfig } from "../config";
 import { useAuth0, withAuthenticationRequired } from "@auth0/auth0-react";
 import Loading from "../components/Loading";
+import { authorized } from "../utils/authorization";
 
 export const CatalogAddComponent = () => {
   const apiOrigin = getConfig().audience;
 
   const [state, setState] = useState({
     authorized: true,
-    showResult: false,
+    dataSent: false,
+    emptyFields: false,
     apiMessage: "",
     error: null,
+    name: "",
+    description: "",
+    price: "",
+    quantity: "",
+    documentation: "",
   });
 
   const {
@@ -59,28 +66,56 @@ export const CatalogAddComponent = () => {
   };
 
   const postProduct = async () => {
-    try {
-      const token = await getAccessTokenSilently();
-      // send POST request to the API
-      const response = await fetch(`${apiOrigin}/catalog`, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          name: document.getElementById("item-name").value,
-          description: document.getElementById("item-description").value,
-          price: document.getElementById("item-price").value,
-          quantity: document.getElementById("item-quantity").value,
-        }),
-      });
-      const responseData = await response.json();
+    if (
+      state.name === "" ||
+      state.description === "" ||
+      state.price === "" ||
+      //   state.documentation === "" ||
+      state.quantity === ""
+    ) {
       setState({
         ...state,
-        data_sent: true,
-        authorized: true,
-        apiMessage: responseData.message,
+        emptyFields: true,
+        dataSent: false,
       });
+      return;
+    }
+    const method = "POST";
+    const path = "/items";
+    try {
+      if (authorized(roles, path, method)) {
+        console.log("User is authorized");
+        const token = await getAccessTokenSilently();
+        const response = await fetch(`${apiOrigin}${path}`, {
+          method: method,
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            name: state.name,
+            description: state.description,
+            price: state.price,
+            quantity: state.quantity,
+            documentation: state.documentation,
+          }),
+        });
+        const responseData = await response.json();
+        setState({
+          ...state,
+          dataSent: true,
+          authorized: true,
+          apiMessage: responseData.message,
+          emptyFields: false,
+        });
+      } else {
+        console.log("User is not authorized");
+        setState({
+          ...state,
+          dataSent: false,
+          authorized: false,
+        });
+      }
     } catch (error) {
       console.log(error);
       setState({
@@ -125,6 +160,12 @@ export const CatalogAddComponent = () => {
             You need to log in as an admin to access this resource
           </Alert>
         )}
+        {state.emptyFields && (
+          <Alert color="warning">Please fill all the fields</Alert>
+        )}
+        {state.dataSent && (
+          <Alert color="success">The item is successfully added</Alert>
+        )}
         <h1>Widgets Catalog</h1>
         <p className="lead">Add a new Product to Widgets Catalog</p>
       </div>
@@ -135,35 +176,77 @@ export const CatalogAddComponent = () => {
             Product Name
           </label>
           <br />
-          <input type="text" id="item-name" name="item-name" />
+          <input
+            type="text"
+            id="item-name"
+            name="item-name"
+            className="text-input"
+            value={state.name}
+            onChange={(e) => setState({ ...state, name: e.target.value })}
+          />
         </div>
         <div className="item-input">
           <label for="item-description" className="item-description">
             Product Description
           </label>
           <br />
-          <input type="text" id="item-description" name="item-description" />
+          <textarea
+            id="item-description"
+            name="item-description"
+            className="text-input"
+            value={state.description}
+            onChange={(e) =>
+              setState({ ...state, description: e.target.value })
+            }
+          />
         </div>
         <div className="item-input">
           <label for="item-price" className="item-description">
             Product Price
           </label>
           <br />
-          <input type="text" id="item-price" name="item-price" />
+          <input
+            type="text"
+            id="item-price"
+            name="item-price"
+            className="text-input"
+            value={state.price}
+            onChange={(e) => setState({ ...state, price: e.target.value })}
+          />
         </div>
         <div className="item-input">
           <label for="item-quantity" className="item-description">
             Product Quantity
           </label>
           <br />
-          <input type="text" id="item-quantity" name="item-quantity" />
+          <input
+            type="text"
+            id="item-quantity"
+            name="item-quantity"
+            className="text-input"
+            value={state.quantity}
+            onChange={(e) => setState({ ...state, quantity: e.target.value })}
+          />
         </div>
         <div className="item-input">
           <label for="item-image" className="item-description">
-            Product Image
+            Product Documentation
           </label>
           <br />
-          <input type="text" id="item-image" name="item-image" />
+          <input
+            type="file"
+            id="item-documentation"
+            name="item-documentation"
+            value={state.documentation}
+            onChange={(e) =>
+              setState({ ...state, documentation: e.target.value })
+            }
+          />
+        </div>
+        <div className="item-input">
+          <Button color="primary" className="btn-margin" onClick={postProduct}>
+            Add Product
+          </Button>
         </div>
       </div>
     </>
