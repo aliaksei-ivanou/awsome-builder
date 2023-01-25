@@ -2,12 +2,13 @@ import React, { useState, useEffect } from "react";
 import { Button, Alert } from "reactstrap";
 import { useAuth0, withAuthenticationRequired } from "@auth0/auth0-react";
 import Loading from "../components/Loading";
-import { getConfig } from "../config";
 import { authorized } from "../utils/authorization";
+import { Amplify, API } from "aws-amplify";
+import awsconfig from "../aws-exports";
+
+Amplify.configure(awsconfig);
 
 export const CatalogComponent = () => {
-  const apiOrigin = getConfig().audience;
-
   const [state, setState] = useState({
     authorized: true,
     showResult: false,
@@ -64,18 +65,19 @@ export const CatalogComponent = () => {
   };
 
   const getItems = async () => {
-    const method = "GET";
+    const token = await getAccessTokenSilently();
+    const apiName = "itemsApi";
     const path = "/items";
+    const myInit = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
+
     try {
-      if (authorized(roles, path, method)) {
+      if (authorized(roles, path, "GET")) {
         console.log("User is authorized");
-        const token = await getAccessTokenSilently();
-        const response = await fetch(`${apiOrigin}${path}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        const responseData = await response.json();
+        const responseData = await API.get(apiName, path, myInit);
         setState({
           ...state,
           showResult: true,

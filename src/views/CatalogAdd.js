@@ -1,18 +1,18 @@
 import React, { useState } from "react";
 import { Button, Alert } from "reactstrap";
-import { getConfig } from "../config";
 import { useAuth0, withAuthenticationRequired } from "@auth0/auth0-react";
 import Loading from "../components/Loading";
 import { authorized } from "../utils/authorization";
+import { Amplify, API } from "aws-amplify";
+import awsconfig from "../aws-exports";
+
+Amplify.configure(awsconfig);
 
 export const CatalogAddComponent = () => {
-  const apiOrigin = getConfig().audience;
-
   const [state, setState] = useState({
     authorized: true,
     dataSent: false,
     emptyFields: false,
-    apiMessage: "",
     error: null,
     name: "",
     description: "",
@@ -27,6 +27,7 @@ export const CatalogAddComponent = () => {
     getAccessTokenWithPopup,
     user,
   } = useAuth0();
+  const token = getAccessTokenSilently();
 
   const roles = user.anycompany_roles;
 
@@ -66,6 +67,21 @@ export const CatalogAddComponent = () => {
   };
 
   const postProduct = async () => {
+    const apiName = "itemsApi";
+    const path = "/items";
+    const myInit = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      body: {
+        name: state.name,
+        description: state.description,
+        price: state.price,
+        quantity: state.quantity,
+        documentation: state.documentation,
+      },
+    };
+
     if (
       state.name === "" ||
       state.description === "" ||
@@ -80,32 +96,14 @@ export const CatalogAddComponent = () => {
       });
       return;
     }
-    const method = "POST";
-    const path = "/items";
     try {
-      if (authorized(roles, path, method)) {
+      if (authorized(roles, path, "POST")) {
         console.log("User is authorized");
-        const token = await getAccessTokenSilently();
-        const response = await fetch(`${apiOrigin}${path}`, {
-          method: method,
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            name: state.name,
-            description: state.description,
-            price: state.price,
-            quantity: state.quantity,
-            documentation: state.documentation,
-          }),
-        });
-        const responseData = await response.json();
+        await API.post(apiName, path, myInit);
         setState({
           ...state,
           dataSent: true,
           authorized: true,
-          apiMessage: responseData.message,
           emptyFields: false,
         });
       } else {
@@ -121,9 +119,7 @@ export const CatalogAddComponent = () => {
       setState({
         ...state,
         data_fetched: true,
-        authorized: false,
         showResult: true,
-        apiMessage: error.message,
       });
     }
   };
@@ -206,7 +202,7 @@ export const CatalogAddComponent = () => {
           </label>
           <br />
           <input
-            type="text"
+            type="number"
             id="item-price"
             name="item-price"
             className="text-input"
@@ -220,7 +216,7 @@ export const CatalogAddComponent = () => {
           </label>
           <br />
           <input
-            type="text"
+            type="number"
             id="item-quantity"
             name="item-quantity"
             className="text-input"
