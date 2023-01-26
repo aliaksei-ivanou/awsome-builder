@@ -4,6 +4,7 @@ import { Button, Alert } from "reactstrap";
 import { useAuth0, withAuthenticationRequired } from "@auth0/auth0-react";
 import Loading from "../components/Loading";
 import { authorized } from "../utils/authorization";
+import { GetPresignedUrl } from "../utils/s3";
 import { Amplify, API } from "aws-amplify";
 import awsconfig from "../aws-exports";
 
@@ -79,7 +80,6 @@ export const CatalogComponent = () => {
 
     try {
       if (authorized(roles, path, "GET")) {
-        console.log("User is authorized");
         const responseData = await API.get(apiName, path, myInit);
         setState({
           ...state,
@@ -87,7 +87,6 @@ export const CatalogComponent = () => {
           apiMessage: responseData,
         });
       } else {
-        console.log("User is not authorized");
         setState({
           ...state,
           showResult: false,

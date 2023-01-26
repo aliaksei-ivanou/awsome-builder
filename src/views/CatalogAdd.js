@@ -134,7 +134,6 @@ export const CatalogAddComponent = () => {
     }
     try {
       if (authorized(roles, path, "POST")) {
-        console.log("User is authorized");
         await API.post(apiName, path, myInit);
         setState({
           ...state,
@@ -143,7 +142,6 @@ export const CatalogAddComponent = () => {
           emptyFields: false,
         });
       } else {
-        console.log("User is not authorized");
         setState({
           ...state,
           dataSent: false,
