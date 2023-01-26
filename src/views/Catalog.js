@@ -75,6 +75,34 @@ export const CatalogComponent = () => {
     });
   };
 
+  const handleDelete = async (id) => {
+    const token = await getAccessTokenSilently();
+    const apiName = "itemsApi";
+    const path = `/items/object/${id}`;
+    const myInit = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
+
+    try {
+      if (authorized(roles, path, "DELETE")) {
+        await API.del(apiName, path, myInit);
+        await getItems();
+      } else {
+        setState({
+          ...state,
+          authorized: false,
+        });
+      }
+    } catch (error) {
+      setState({
+        ...state,
+        error: error.error,
+      });
+    }
+  };
+
   const getItems = async () => {
     const token = await getAccessTokenSilently();
     const apiName = "itemsApi";
@@ -158,6 +186,7 @@ export const CatalogComponent = () => {
                   <th scope="col">Product Price</th>
                   <th scope="col">Product Quantity</th>
                   <th scope="col">Product Documentation</th>
+                  <th scope="col">Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -176,6 +205,24 @@ export const CatalogComponent = () => {
                       >
                         {item.productDocumentation}
                       </a>
+                    </td>
+                    <td>
+                      <Button
+                        color="primary"
+                        onClick={() =>
+                          history.push(
+                            `/catalog/edit-product/${item.product_id}`
+                          )
+                        }
+                      >
+                        Edit
+                      </Button>
+                      <Button
+                        color="danger"
+                        onClick={() => handleDelete(item.product_id)}
+                      >
+                        Delete
+                      </Button>
                     </td>
                   </tr>
                 ))}
