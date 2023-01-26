@@ -67,7 +67,7 @@ export const CatalogAddComponent = () => {
     fn();
   };
 
-  const getPresignedUrl = async (fileName, fileType, action) => {
+  const getPresignedUrl = async (fileName, action) => {
     const token = await getAccessTokenSilently();
     const apiName = "itemsApi";
     const path = "/items/sign-s3";
@@ -77,7 +77,6 @@ export const CatalogAddComponent = () => {
       },
       body: {
         fileName: fileName,
-        fileType: fileType,
         action: action,
       },
     };
@@ -89,7 +88,7 @@ export const CatalogAddComponent = () => {
   };
 
   const handleUpload = async (file) => {
-    await getPresignedUrl(file.name, file.type, "putObject")
+    await getPresignedUrl(file.name, "putObject")
       .then((signedRequest) => {
         console.log("Recieved a signed request " + signedRequest);
         var options = {
@@ -102,7 +101,14 @@ export const CatalogAddComponent = () => {
           .then((result) => {
             console.log("Response from s3");
             console.log(result);
-            setState({ ...state, success: true });
+            getPresignedUrl(file.name, "getObject").then((url) => {
+              setState({
+                ...state,
+                success: true,
+                documentation: file.name,
+                url: url,
+              });
+            });
           })
           .catch((error) => {
             console.log("ERROR " + error);
@@ -134,7 +140,7 @@ export const CatalogAddComponent = () => {
       state.name === "" ||
       state.description === "" ||
       state.price === "" ||
-      //   state.documentation === "" ||
+      state.documentation === "" ||
       state.quantity === ""
     ) {
       setState({
@@ -208,11 +214,16 @@ export const CatalogAddComponent = () => {
           <Alert color="warning">Please fill all the fields</Alert>
         )}
         {state.dataSent && (
-          <Alert color="success">The item is successfully added</Alert>
+          <Alert color="success">
+            The product is successfully added to the catalog
+          </Alert>
         )}
         {state.success && (
           <Alert color="success">
-            The file is successfully uploaded. It can be accessed at {state.url}
+            The file is successfully uploaded. It can be accessed{" "}
+            <a href={state.url} class="alert-link">
+              here
+            </a>
           </Alert>
         )}
         <h1>Widgets Catalog</h1>

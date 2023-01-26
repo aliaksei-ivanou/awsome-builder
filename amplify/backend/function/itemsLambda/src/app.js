@@ -277,13 +277,11 @@ app.delete(path + "/object" + hashKeyPath + sortKeyPath, function (req, res) {
 app.post(path + "/sign-s3", function (req, res) {
   const s3 = new AWS.S3({});
   const fileName = req.body.fileName;
-  const fileType = req.body.fileType;
   const action = req.body.action;
   const s3Params = {
     Bucket: bucketName,
     Key: fileName,
     Expires: 500,
-    ContentType: fileType,
   };
 
   s3.getSignedUrl(action, s3Params, (err, data) => {
