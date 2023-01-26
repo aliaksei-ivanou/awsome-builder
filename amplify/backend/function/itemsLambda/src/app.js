@@ -15,7 +15,6 @@ const { v4: uuidv4 } = require("uuid");
 AWS.config.update({ region: process.env.TABLE_REGION });
 
 const dynamodb = new AWS.DynamoDB.DocumentClient();
-var s3 = new AWS.S3();
 
 let tableName = "itemsTable";
 if (process.env.ENV && process.env.ENV !== "NONE") {
@@ -272,22 +271,22 @@ app.delete(path + "/object" + hashKeyPath + sortKeyPath, function (req, res) {
 });
 
 /**************************************
- * HTTP sign S3 method to sign an upload S3 link *
+ * HTTP generate an S3 pre-signed URL *
  ***************************************/
 
 app.post(path + "/sign-s3", function (req, res) {
-  const s3 = new AWS.S3();
+  const s3 = new AWS.S3({});
   const fileName = req.body.fileName;
   const fileType = req.body.fileType;
+  const action = req.body.action;
   const s3Params = {
     Bucket: bucketName,
     Key: fileName,
     Expires: 500,
     ContentType: fileType,
-    ACL: "public-read",
   };
 
-  s3.getSignedUrl("putObject", s3Params, (err, data) => {
+  s3.getSignedUrl(action, s3Params, (err, data) => {
     if (err) {
       console.log(err);
       return res.end();

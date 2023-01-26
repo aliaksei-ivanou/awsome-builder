@@ -21,7 +21,6 @@ export const CatalogAddComponent = () => {
     description: "",
     price: "",
     quantity: "",
-    documentation: "",
   });
 
   const {
@@ -66,6 +65,48 @@ export const CatalogAddComponent = () => {
   const handle = (e, fn) => {
     e.preventDefault();
     fn();
+  };
+
+  const handleUpload = async (file) => {
+    const token = await getAccessTokenSilently();
+    const apiName = "itemsApi";
+    const path = "/items/sign-s3";
+    const myInit = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      body: {
+        fileName: file.name,
+        fileType: file.type,
+        action: "putObject",
+      },
+    };
+
+    await API.post(apiName, path, myInit)
+      .then((response) => {
+        var signedRequest = response.signedRequest;
+        var url = response.url;
+        setState({ url: url });
+        console.log("Recieved a signed request " + signedRequest);
+        var options = {
+          headers: {
+            "Content-Type": file.type,
+          },
+        };
+        axios
+          .put(signedRequest, file, options)
+          .then((result) => {
+            console.log("Response from s3");
+            console.log(result);
+            this.setState({ success: true });
+          })
+          .catch((error) => {
+            console.log("ERROR " + JSON.stringify(error));
+          });
+      })
+      .catch((error) => {
+        console.log(JSON.stringify(error));
+      });
   };
 
   const postProduct = async () => {
@@ -171,9 +212,7 @@ export const CatalogAddComponent = () => {
 
       <div className="item-input-container">
         <div className="item-input">
-          <label for="item-name" className="item-description">
-            Product Name
-          </label>
+          <label className="item-description">Product Name</label>
           <br />
           <input
             type="text"
@@ -185,9 +224,7 @@ export const CatalogAddComponent = () => {
           />
         </div>
         <div className="item-input">
-          <label for="item-description" className="item-description">
-            Product Description
-          </label>
+          <label className="item-description">Product Description</label>
           <br />
           <textarea
             id="item-description"
@@ -200,9 +237,7 @@ export const CatalogAddComponent = () => {
           />
         </div>
         <div className="item-input">
-          <label for="item-price" className="item-description">
-            Product Price
-          </label>
+          <label className="item-description">Product Price</label>
           <br />
           <input
             type="number"
@@ -214,9 +249,7 @@ export const CatalogAddComponent = () => {
           />
         </div>
         <div className="item-input">
-          <label for="item-quantity" className="item-description">
-            Product Quantity
-          </label>
+          <label className="item-description">Product Quantity</label>
           <br />
           <input
             type="number"
@@ -228,18 +261,13 @@ export const CatalogAddComponent = () => {
           />
         </div>
         <div className="item-input">
-          <label for="item-image" className="item-description">
-            Product Documentation
-          </label>
+          <label className="item-description">Product Documentation</label>
           <br />
           <input
             type="file"
             id="item-documentation"
             name="item-documentation"
-            value={state.documentation}
-            onChange={(e) =>
-              setState({ ...state, documentation: e.target.value })
-            }
+            onChange={(e) => handleUpload(e.target.files[0])}
           />
         </div>
         <div className="item-input">
