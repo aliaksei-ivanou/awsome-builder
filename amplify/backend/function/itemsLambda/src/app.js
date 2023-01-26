@@ -10,17 +10,18 @@ const AWS = require("aws-sdk");
 const awsServerlessExpressMiddleware = require("aws-serverless-express/middleware");
 const bodyParser = require("body-parser");
 const express = require("express");
-
 const { v4: uuidv4 } = require("uuid");
 
 AWS.config.update({ region: process.env.TABLE_REGION });
 
 const dynamodb = new AWS.DynamoDB.DocumentClient();
+var s3 = new AWS.S3();
 
 let tableName = "itemsTable";
 if (process.env.ENV && process.env.ENV !== "NONE") {
   tableName = tableName + "-" + process.env.ENV;
 }
+let bucketName = "awsomebuilder-20230124160317-documentation-dev";
 
 const userIdPresent = false; // TODO: update in case is required to use that definition
 const partitionKeyName = "product_id";
@@ -267,6 +268,35 @@ app.delete(path + "/object" + hashKeyPath + sortKeyPath, function (req, res) {
     } else {
       res.json({ url: req.url, data: data });
     }
+  });
+});
+
+/**************************************
+ * HTTP sign S3 method to sign an upload S3 link *
+ ***************************************/
+
+app.post(path + "/sign-s3", function (req, res) {
+  const s3 = new AWS.S3();
+  const fileName = req.body.fileName;
+  const fileType = req.body.fileType;
+  const s3Params = {
+    Bucket: bucketName,
+    Key: fileName,
+    Expires: 500,
+    ContentType: fileType,
+    ACL: "public-read",
+  };
+
+  s3.getSignedUrl("putObject", s3Params, (err, data) => {
+    if (err) {
+      console.log(err);
+      return res.end();
+    }
+    const returnData = {
+      signedRequest: data,
+      url: `https://${bucketName}.s3.amazonaws.com/${fileName}`,
+    };
+    return res.send(returnData);
   });
 });
 
