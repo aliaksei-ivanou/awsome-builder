@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Button, Alert } from "reactstrap";
 import { useAuth0, withAuthenticationRequired } from "@auth0/auth0-react";
 import axios from "axios";
@@ -199,7 +199,9 @@ export const CatalogAddComponent = () => {
     }
   };
 
-  getProduct();
+  useEffect(() => {
+    getProduct();
+  }, []);
 
   return (
     <>
