@@ -83,13 +83,10 @@ export const CatalogAddComponent = () => {
           .then((result) => {
             console.log("Response from s3");
             console.log(result);
-            GetPresignedUrl(file.name, "getObject", token).then((url) => {
-              setState({
-                ...state,
-                success: true,
-                documentation: file.name,
-                url: url,
-              });
+            setState({
+              ...state,
+              success: true,
+              documentation: file.name,
             });
           })
           .catch((error) => {
@@ -99,6 +96,13 @@ export const CatalogAddComponent = () => {
       .catch((error) => {
         console.log(error);
       });
+  };
+
+  const handleDocument = async (filename) => {
+    const token = await getAccessTokenSilently();
+    await GetPresignedUrl(filename, "getObject", token).then((url) => {
+      window.open(url);
+    });
   };
 
   const postProduct = async () => {
@@ -190,12 +194,6 @@ export const CatalogAddComponent = () => {
             The product is successfully added to the catalog
           </Alert>
         )}
-        {state.success && (
-          <Alert color="success">
-            The file is successfully uploaded. It can be accessed{" "}
-            <a href={state.url}>here</a>
-          </Alert>
-        )}
         <h1>Widgets Catalog</h1>
         <p className="lead">Add a new Product to Widgets Catalog</p>
       </div>
@@ -259,6 +257,14 @@ export const CatalogAddComponent = () => {
             name="item-documentation"
             onChange={(e) => handleUpload(e.target.files[0])}
           />
+          {state.success && (
+            <Alert color="success">
+              The file is successfully uploaded:{" "}
+              <a href="#/" onClick={(e) => handleDocument(state.documentation)}>
+                {state.documentation}
+              </a>
+            </Alert>
+          )}
         </div>
         <div className="item-input">
           <Button color="primary" className="btn-margin" onClick={postProduct}>

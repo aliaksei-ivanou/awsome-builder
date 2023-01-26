@@ -6,6 +6,7 @@ import axios from "axios";
 import Loading from "../components/Loading";
 import { authorized } from "../utils/authorization";
 import { GetPresignedUrl } from "../utils/s3";
+import { timeout } from "../utils/misc";
 import { Amplify, API } from "aws-amplify";
 import awsconfig from "../aws-exports";
 
@@ -35,10 +36,6 @@ export const CatalogAddComponent = () => {
   const roles = user.anycompany_roles;
 
   const history = useHistory();
-
-  function timeout(delay) {
-    return new Promise((res) => setTimeout(res, delay));
-  }
 
   const handleConsent = async () => {
     try {
@@ -312,6 +309,7 @@ export const CatalogAddComponent = () => {
             name="item-documentation"
             onChange={(e) => handleUpload(e.target.files[0])}
           />
+          <br />
           <label>
             <a href="#/" onClick={(e) => handleDocument(state.documentation)}>
               {state.documentation}
