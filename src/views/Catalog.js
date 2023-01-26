@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { Redirect, useHistory } from "react-router-dom";
 import { Button, Alert } from "reactstrap";
 import { useAuth0, withAuthenticationRequired } from "@auth0/auth0-react";
 import Loading from "../components/Loading";
@@ -24,6 +25,8 @@ export const CatalogComponent = () => {
   } = useAuth0();
 
   const roles = user.anycompany_roles;
+
+  const history = useHistory();
 
   const handleConsent = async () => {
     try {
@@ -144,7 +147,7 @@ export const CatalogComponent = () => {
           <div>
             <Button
               color="primary"
-              onClick={() => (window.location.href = "/catalog/add-product")}
+              onClick={() => history.push("/catalog/add-product")}
               style={{ float: "right" }}
             >
               Add Product
