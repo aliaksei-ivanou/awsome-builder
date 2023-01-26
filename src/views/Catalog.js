@@ -68,6 +68,13 @@ export const CatalogComponent = () => {
     fn();
   };
 
+  const handleDocument = async (filename) => {
+    const token = await getAccessTokenSilently();
+    await GetPresignedUrl(filename, "getObject", token).then((url) => {
+      window.open(url);
+    });
+  };
+
   const getItems = async () => {
     const token = await getAccessTokenSilently();
     const apiName = "itemsApi";
@@ -162,8 +169,10 @@ export const CatalogComponent = () => {
                     <td>{item.productQuantity}</td>
                     <td>
                       <a
-                        href="asd"
-                        onClick={(e) => handle(e, handleLoginAgain)}
+                        href="#/"
+                        onClick={(e) =>
+                          handleDocument(item.productDocumentation)
+                        }
                       >
                         {item.productDocumentation}
                       </a>
