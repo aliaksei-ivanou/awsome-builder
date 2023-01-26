@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Redirect, useHistory } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 import { Button, Alert } from "reactstrap";
 import { useAuth0, withAuthenticationRequired } from "@auth0/auth0-react";
 import Loading from "../components/Loading";
@@ -112,11 +112,7 @@ export const CatalogComponent = () => {
         {state.error === "consent_required" && (
           <Alert color="warning">
             You need to{" "}
-            <a
-              href="#/"
-              class="alert-link"
-              onClick={(e) => handle(e, handleConsent)}
-            >
+            <a href="#/" onClick={(e) => handle(e, handleConsent)}>
               consent to get access to users api
             </a>
           </Alert>
@@ -124,11 +120,7 @@ export const CatalogComponent = () => {
         {state.error === "login_required" && (
           <Alert color="warning">
             You need to{" "}
-            <a
-              href="#/"
-              class="alert-link"
-              onClick={(e) => handle(e, handleLoginAgain)}
-            >
+            <a href="#/" onClick={(e) => handle(e, handleLoginAgain)}>
               log in again
             </a>
           </Alert>
@@ -169,7 +161,14 @@ export const CatalogComponent = () => {
                     <td>{item.productDescription}</td>
                     <td>{item.productPrice}</td>
                     <td>{item.productQuantity}</td>
-                    <td>{item.productDocumentation}</td>
+                    <td>
+                      <a
+                        href="asd"
+                        onClick={(e) => handle(e, handleLoginAgain)}
+                      >
+                        {item.productDocumentation}
+                      </a>
+                    </td>
                   </tr>
                 ))}
               </tbody>

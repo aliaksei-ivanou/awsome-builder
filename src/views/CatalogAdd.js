@@ -4,6 +4,7 @@ import { useAuth0, withAuthenticationRequired } from "@auth0/auth0-react";
 import axios from "axios";
 import Loading from "../components/Loading";
 import { authorized } from "../utils/authorization";
+import { GetPresignedUrl } from "../utils/s3";
 import { Amplify, API } from "aws-amplify";
 import awsconfig from "../aws-exports";
 
@@ -67,28 +68,9 @@ export const CatalogAddComponent = () => {
     fn();
   };
 
-  const getPresignedUrl = async (fileName, action) => {
-    const token = await getAccessTokenSilently();
-    const apiName = "itemsApi";
-    const path = "/items/sign-s3";
-    const myInit = {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-      body: {
-        fileName: fileName,
-        action: action,
-      },
-    };
-
-    const response = await API.post(apiName, path, myInit);
-    const signedRequest = response.signedRequest;
-    console.log("Recieved a signed request " + signedRequest);
-    return signedRequest;
-  };
-
   const handleUpload = async (file) => {
-    await getPresignedUrl(file.name, "putObject")
+    const token = await getAccessTokenSilently();
+    await GetPresignedUrl(file.name, "putObject", token)
       .then((signedRequest) => {
         console.log("Recieved a signed request " + signedRequest);
         var options = {
@@ -101,7 +83,7 @@ export const CatalogAddComponent = () => {
           .then((result) => {
             console.log("Response from s3");
             console.log(result);
-            getPresignedUrl(file.name, "getObject").then((url) => {
+            GetPresignedUrl(file.name, "getObject", token).then((url) => {
               setState({
                 ...state,
                 success: true,
@@ -184,11 +166,7 @@ export const CatalogAddComponent = () => {
         {state.error === "consent_required" && (
           <Alert color="warning">
             You need to{" "}
-            <a
-              href="#/"
-              class="alert-link"
-              onClick={(e) => handle(e, handleConsent)}
-            >
+            <a href="#/" onClick={(e) => handle(e, handleConsent)}>
               consent to get access to users api
             </a>
           </Alert>
@@ -196,11 +174,7 @@ export const CatalogAddComponent = () => {
         {state.error === "login_required" && (
           <Alert color="warning">
             You need to{" "}
-            <a
-              href="#/"
-              class="alert-link"
-              onClick={(e) => handle(e, handleLoginAgain)}
-            >
+            <a href="#/" onClick={(e) => handle(e, handleLoginAgain)}>
               log in again
             </a>
           </Alert>
@@ -221,9 +195,7 @@ export const CatalogAddComponent = () => {
         {state.success && (
           <Alert color="success">
             The file is successfully uploaded. It can be accessed{" "}
-            <a href={state.url} class="alert-link">
-              here
-            </a>
+            <a href={state.url}>here</a>
           </Alert>
         )}
         <h1>Widgets Catalog</h1>
