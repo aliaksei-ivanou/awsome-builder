@@ -67,7 +67,7 @@ export const CatalogAddComponent = () => {
     fn();
   };
 
-  const handleUpload = async (file) => {
+  const getPresignedUrl = async (fileName, fileType, action) => {
     const token = await getAccessTokenSilently();
     const apiName = "itemsApi";
     const path = "/items/sign-s3";
@@ -76,17 +76,21 @@ export const CatalogAddComponent = () => {
         Authorization: `Bearer ${token}`,
       },
       body: {
-        fileName: file.name,
-        fileType: file.type,
-        action: "putObject",
+        fileName: fileName,
+        fileType: fileType,
+        action: action,
       },
     };
 
-    await API.post(apiName, path, myInit)
-      .then((response) => {
-        var signedRequest = response.signedRequest;
-        var url = response.url;
-        setState({ url: url });
+    const response = await API.post(apiName, path, myInit);
+    const signedRequest = response.signedRequest;
+    console.log("Recieved a signed request " + signedRequest);
+    return signedRequest;
+  };
+
+  const handleUpload = async (file) => {
+    await getPresignedUrl(file.name, file.type, "putObject")
+      .then((signedRequest) => {
         console.log("Recieved a signed request " + signedRequest);
         var options = {
           headers: {
@@ -98,14 +102,14 @@ export const CatalogAddComponent = () => {
           .then((result) => {
             console.log("Response from s3");
             console.log(result);
-            this.setState({ success: true });
+            setState({ ...state, success: true });
           })
           .catch((error) => {
-            console.log("ERROR " + JSON.stringify(error));
+            console.log("ERROR " + error);
           });
       })
       .catch((error) => {
-        console.log(JSON.stringify(error));
+        console.log(error);
       });
   };
 
@@ -205,6 +209,11 @@ export const CatalogAddComponent = () => {
         )}
         {state.dataSent && (
           <Alert color="success">The item is successfully added</Alert>
+        )}
+        {state.success && (
+          <Alert color="success">
+            The file is successfully uploaded. It can be accessed at {state.url}
+          </Alert>
         )}
         <h1>Widgets Catalog</h1>
         <p className="lead">Add a new Product to Widgets Catalog</p>
