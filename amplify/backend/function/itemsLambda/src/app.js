@@ -281,7 +281,7 @@ app.post(path + "/sign-s3", function (req, res) {
   const s3Params = {
     Bucket: bucketName,
     Key: fileName,
-    Expires: 500,
+    Expires: 60 * 5,
   };
 
   s3.getSignedUrl(action, s3Params, (err, data) => {
