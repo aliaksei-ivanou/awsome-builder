@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useHistory } from "react-router-dom";
 import { Button, Alert } from "reactstrap";
 import { useAuth0, withAuthenticationRequired } from "@auth0/auth0-react";
 import axios from "axios";
@@ -13,7 +14,7 @@ Amplify.configure(awsconfig);
 export const CatalogAddComponent = () => {
   const [state, setState] = useState({
     authorized: true,
-    dataSent: false,
+    productUpdated: false,
     emptyFields: false,
     error: null,
     success: false,
@@ -32,6 +33,12 @@ export const CatalogAddComponent = () => {
   } = useAuth0();
 
   const roles = user.anycompany_roles;
+
+  const history = useHistory();
+
+  function timeout(delay) {
+    return new Promise((res) => setTimeout(res, delay));
+  }
 
   const handleConsent = async () => {
     try {
@@ -76,7 +83,6 @@ export const CatalogAddComponent = () => {
   };
 
   const getProduct = async () => {
-    // split the path by / and get the last element
     const id = window.location.pathname.split("/").pop();
     const token = await getAccessTokenSilently();
     const apiName = "itemsApi";
@@ -142,7 +148,7 @@ export const CatalogAddComponent = () => {
       });
   };
 
-  const postProduct = async () => {
+  const updateProduct = async () => {
     const token = await getAccessTokenSilently();
     const apiName = "itemsApi";
     const path = "/items";
@@ -151,6 +157,7 @@ export const CatalogAddComponent = () => {
         Authorization: `Bearer ${token}`,
       },
       body: {
+        product_id: window.location.pathname.split("/").pop(),
         name: state.name,
         description: state.description,
         price: state.price,
@@ -169,23 +176,26 @@ export const CatalogAddComponent = () => {
       setState({
         ...state,
         emptyFields: true,
-        dataSent: false,
+        productUpdated: false,
       });
       return;
     }
     try {
       if (authorized(roles, path, "POST")) {
-        await API.post(apiName, path, myInit);
+        await API.put(apiName, path, myInit);
         setState({
           ...state,
-          dataSent: true,
+          productUpdated: true,
           authorized: true,
           emptyFields: false,
         });
+        // wait 2 seconds and redirect to catalog
+        await timeout(2000);
+        history.push("/catalog");
       } else {
         setState({
           ...state,
-          dataSent: false,
+          productUpdated: false,
           authorized: false,
         });
       }
@@ -230,10 +240,8 @@ export const CatalogAddComponent = () => {
         {state.emptyFields && (
           <Alert color="warning">Please fill all the fields</Alert>
         )}
-        {state.dataSent && (
-          <Alert color="success">
-            The product is successfully added to the catalog
-          </Alert>
+        {state.productUpdated && (
+          <Alert color="success">The product is successfully updated</Alert>
         )}
         {state.success && (
           <Alert color="success">
@@ -311,8 +319,12 @@ export const CatalogAddComponent = () => {
           </label>
         </div>
         <div className="item-input">
-          <Button color="primary" className="btn-margin" onClick={postProduct}>
-            Add Product
+          <Button
+            color="primary"
+            className="btn-margin"
+            onClick={updateProduct}
+          >
+            Update Product
           </Button>
         </div>
       </div>

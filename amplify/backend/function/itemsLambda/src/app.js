@@ -180,7 +180,14 @@ app.put(path, function (req, res) {
 
   let putItemParams = {
     TableName: tableName,
-    Item: req.body,
+    Item: {
+      product_id: req.body.product_id,
+      productDescription: req.body.description,
+      productDocumentation: req.body.documentation,
+      productName: req.body.name,
+      productPrice: req.body.price,
+      productQuantity: req.body.quantity,
+    },
   };
   dynamodb.put(putItemParams, (err, data) => {
     if (err) {
