@@ -32,7 +32,6 @@ export const CatalogAddComponent = () => {
   const { getPresignedUrl } = useGetPresignedUrlWrapper();
 
   const handleUpload = async (file) => {
-    const token = await getAccessTokenSilently();
     try {
       const signedRequest = await getPresignedUrl(file.name, "putObject");
       const options = { headers: { "Content-Type": file.type } };
@@ -41,7 +40,6 @@ export const CatalogAddComponent = () => {
         ...state,
         success: true,
         documentation: file.name,
-        token: token,
       });
     } catch (error) {
       console.log(error);
@@ -76,7 +74,6 @@ export const CatalogAddComponent = () => {
         ...state,
         emptyFields: true,
         dataSent: false,
-        token: token,
       });
       return;
     }
@@ -86,7 +83,6 @@ export const CatalogAddComponent = () => {
         ...state,
         dataSent: false,
         authorized: false,
-        token: token,
       });
       return;
     }
@@ -98,7 +94,6 @@ export const CatalogAddComponent = () => {
         dataSent: true,
         authorized: true,
         emptyFields: false,
-        token: token,
       });
     } catch (error) {
       console.log(error);
@@ -106,21 +101,16 @@ export const CatalogAddComponent = () => {
         ...state,
         data_fetched: true,
         showResult: true,
-        token: token,
       });
     }
   };
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const token = await getAccessTokenSilently();
-      setState({
-        ...state,
-        token,
-      });
-    };
-    fetchData();
-  }, []);
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     const token = await getAccessTokenSilently();
+  //   };
+  //   fetchData();
+  // }, []);
 
   return (
     <>

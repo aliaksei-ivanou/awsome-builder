@@ -66,7 +66,6 @@ export const OrdersComponent = () => {
         orders: orders.data,
         showResult: products.showResult && orders.showResult,
         authorized: products.authorized && orders.authorized,
-        token: token,
       });
     })();
   }, []);

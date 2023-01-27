@@ -50,7 +50,6 @@ export const CatalogAddComponent = () => {
         setState({
           ...state,
           authorized: false,
-          token: token,
         });
         return;
       }
@@ -64,7 +63,6 @@ export const CatalogAddComponent = () => {
         price: response.productPrice,
         quantity: response.productQuantity,
         documentation: response.productDocumentation,
-        token: token,
       });
     } catch (error) {
       console.log(error);
@@ -72,13 +70,8 @@ export const CatalogAddComponent = () => {
   };
 
   const handleUpload = async (file) => {
-    const token = await getAccessTokenSilently();
     try {
-      const signedRequest = await getPresignedUrl(
-        file.name,
-        "putObject",
-        token
-      );
+      const signedRequest = await getPresignedUrl(file.name, "putObject");
       const options = {
         headers: {
           "Content-Type": file.type,
@@ -91,7 +84,6 @@ export const CatalogAddComponent = () => {
         success: true,
         documentation: file.name,
         url: url,
-        token: token,
       });
     } catch (error) {
       console.log(error);
@@ -116,7 +108,6 @@ export const CatalogAddComponent = () => {
         ...state,
         emptyFields: true,
         productUpdated: false,
-        token: token,
       });
       return;
     }
@@ -143,7 +134,6 @@ export const CatalogAddComponent = () => {
           productUpdated: true,
           authorized: true,
           emptyFields: false,
-          token: token,
         });
         // wait 2 seconds and redirect to catalog
         await timeout(2000);
@@ -153,7 +143,6 @@ export const CatalogAddComponent = () => {
           ...state,
           productUpdated: false,
           authorized: false,
-          token: token,
         });
       }
     } catch (error) {
@@ -162,7 +151,6 @@ export const CatalogAddComponent = () => {
         ...state,
         data_fetched: true,
         showResult: true,
-        token: token,
       });
     }
   };

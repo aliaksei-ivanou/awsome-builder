@@ -50,13 +50,11 @@ export const CatalogComponent = () => {
           showResult,
           authorized,
           error,
-          token,
         });
       } else {
         setState({
           ...state,
           authorized: false,
-          token,
         });
       }
     } catch (error) {
@@ -80,7 +78,6 @@ export const CatalogComponent = () => {
         showResult,
         authorized,
         error,
-        token,
       });
     };
     fetchData();
