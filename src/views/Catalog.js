@@ -47,23 +47,29 @@ export const CatalogComponent = () => {
         const { data, showResult, authorized, error } = await getItems(
           user.anycompany_roles
         );
-        setState({
-          ...state,
-          products: data,
-          showResult,
-          authorized,
-          error,
+        setState((prevState) => {
+          return {
+            ...prevState,
+            products: data,
+            showResult,
+            authorized,
+            error,
+          };
         });
       } else {
-        setState({
-          ...state,
-          authorized: false,
+        setState((prevState) => {
+          return {
+            ...prevState,
+            authorized: false,
+          };
         });
       }
     } catch (error) {
-      setState({
-        ...state,
-        error: error.error,
+      setState((prevState) => {
+        return {
+          ...prevState,
+          error: error.error,
+        };
       });
     }
   };
@@ -73,12 +79,8 @@ export const CatalogComponent = () => {
       const { data, showResult, authorized, error } = await getItems(
         user.anycompany_roles
       );
-      setState({
-        ...state,
-        products: data,
-        showResult,
-        authorized,
-        error,
+      setState((prevState) => {
+        return { ...prevState, products: data, showResult, authorized, error };
       });
     };
     fetchData();

@@ -38,10 +38,12 @@ export const CatalogAddComponent = () => {
       const signedRequest = await getPresignedUrl(file.name, "putObject");
       const options = { headers: { "Content-Type": file.type } };
       await axios.put(signedRequest, file, options);
-      setState({
-        ...state,
-        success: true,
-        documentation: file.name,
+      setState((prevState) => {
+        return {
+          ...prevState,
+          success: true,
+          documentation: file.name,
+        };
       });
     } catch (error) {
       console.log(error);
@@ -72,37 +74,45 @@ export const CatalogAddComponent = () => {
       !state.documentation ||
       !state.quantity
     ) {
-      setState({
-        ...state,
-        emptyFields: true,
-        dataSent: false,
+      setState((prevState) => {
+        return {
+          ...prevState,
+          emptyFields: true,
+          dataSent: false,
+        };
       });
       return;
     }
 
     if (!authorized(user.anycompany_roles, path, "POST")) {
-      setState({
-        ...state,
-        dataSent: false,
-        authorized: false,
+      setState((prevState) => {
+        return {
+          ...prevState,
+          dataSent: false,
+          authorized: false,
+        };
       });
       return;
     }
 
     try {
       await API.post(apiName, path, myInit);
-      setState({
-        ...state,
-        dataSent: true,
-        authorized: true,
-        emptyFields: false,
+      setState((prevState) => {
+        return {
+          ...prevState,
+          dataSent: true,
+          authorized: true,
+          emptyFields: false,
+        };
       });
     } catch (error) {
       console.log(error);
-      setState({
-        ...state,
-        data_fetched: true,
-        showResult: true,
+      setState((prevState) => {
+        return {
+          ...prevState,
+          data_fetched: true,
+          showResult: true,
+        };
       });
     }
   };
@@ -153,7 +163,14 @@ export const CatalogAddComponent = () => {
             name="item-name"
             className="text-input"
             value={state.name}
-            onChange={(e) => setState({ ...state, name: e.target.value })}
+            onChange={(e) =>
+              setState((prevState) => {
+                return {
+                  ...prevState,
+                  name: e.target.value,
+                };
+              })
+            }
           />
         </div>
         <div className="item-input">
@@ -165,7 +182,12 @@ export const CatalogAddComponent = () => {
             className="text-input"
             value={state.description}
             onChange={(e) =>
-              setState({ ...state, description: e.target.value })
+              setState((prevState) => {
+                return {
+                  ...prevState,
+                  description: e.target.value,
+                };
+              })
             }
           />
         </div>
@@ -178,7 +200,14 @@ export const CatalogAddComponent = () => {
             name="item-price"
             className="text-input"
             value={state.price}
-            onChange={(e) => setState({ ...state, price: e.target.value })}
+            onChange={(e) =>
+              setState((prevState) => {
+                return {
+                  ...prevState,
+                  price: e.target.value,
+                };
+              })
+            }
           />
         </div>
         <div className="item-input">
@@ -190,7 +219,14 @@ export const CatalogAddComponent = () => {
             name="item-quantity"
             className="text-input"
             value={state.quantity}
-            onChange={(e) => setState({ ...state, quantity: e.target.value })}
+            onChange={(e) =>
+              setState((prevState) => {
+                return {
+                  ...prevState,
+                  quantity: e.target.value,
+                };
+              })
+            }
           />
         </div>
         <div className="item-input">

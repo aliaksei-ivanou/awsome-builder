@@ -41,15 +41,19 @@ export const OrdersComponent = () => {
         await API.del(apiName, path, myInit);
         await getOrders(user.anycompany_roles);
       } else {
-        setState({
-          ...state,
-          authorized: false,
+        setState((prevState) => {
+          return {
+            ...prevState,
+            authorized: false,
+          };
         });
       }
     } catch (error) {
-      setState({
-        ...state,
-        error: error.error,
+      setState((prevState) => {
+        return {
+          ...prevState,
+          error: error.error,
+        };
       });
     }
   };
@@ -58,12 +62,14 @@ export const OrdersComponent = () => {
     (async () => {
       const products = await getItems(user.anycompany_roles);
       const orders = await getOrders(user.anycompany_roles);
-      setState({
-        ...state,
-        products: products.data,
-        orders: orders.data,
-        showResult: products.showResult && orders.showResult,
-        authorized: products.authorized && orders.authorized,
+      setState((prevState) => {
+        return {
+          ...prevState,
+          products: products.data,
+          orders: orders.data,
+          showResult: products.showResult && orders.showResult,
+          authorized: products.authorized && orders.authorized,
+        };
       });
     })();
   }, []);
