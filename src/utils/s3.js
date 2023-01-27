@@ -1,7 +1,5 @@
-import { useState } from "react";
 import { Amplify, API } from "aws-amplify";
 import awsconfig from "../aws-exports";
-import axios from "axios";
 
 Amplify.configure(awsconfig);
 
