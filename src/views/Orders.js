@@ -4,7 +4,7 @@ import { Button, Alert } from "reactstrap";
 import { useAuth0, withAuthenticationRequired } from "@auth0/auth0-react";
 import Loading from "../components/Loading";
 import { authorized } from "../utils/authorization";
-import { getItems } from "../utils/api";
+import { useApiWrapper } from "../utils/api";
 import { getOrders } from "../utils/api";
 import { Amplify, API } from "aws-amplify";
 import awsconfig from "../aws-exports";
@@ -22,7 +22,7 @@ export const OrdersComponent = () => {
   });
 
   const { handleConsent, handleLoginAgain, handle } = useAuth0ConsentWrapper();
-
+  const { getItems, getOrders } = useApiWrapper();
   const { getAccessTokenSilently, user } = useAuth0();
 
   const history = useHistory();
@@ -40,7 +40,7 @@ export const OrdersComponent = () => {
     try {
       if (authorized(user.anycompany_roles, path, "DELETE")) {
         await API.del(apiName, path, myInit);
-        await getOrders(token, user.anycompany_roles);
+        await getOrders(user.anycompany_roles);
       } else {
         setState({
           ...state,
@@ -57,9 +57,8 @@ export const OrdersComponent = () => {
 
   useEffect(() => {
     (async () => {
-      const token = await getAccessTokenSilently();
-      const products = await getItems(token, user.anycompany_roles);
-      const orders = await getOrders(token, user.anycompany_roles);
+      const products = await getItems(user.anycompany_roles);
+      const orders = await getOrders(user.anycompany_roles);
       setState({
         ...state,
         products: products.data,

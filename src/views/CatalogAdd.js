@@ -105,13 +105,6 @@ export const CatalogAddComponent = () => {
     }
   };
 
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     const token = await getAccessTokenSilently();
-  //   };
-  //   fetchData();
-  // }, []);
-
   return (
     <>
       <div className="mb-5">

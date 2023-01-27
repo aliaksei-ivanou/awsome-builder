@@ -4,7 +4,7 @@ import { Button, Alert } from "reactstrap";
 import { useAuth0, withAuthenticationRequired } from "@auth0/auth0-react";
 import Loading from "../components/Loading";
 import { authorized } from "../utils/authorization";
-import { getItems } from "../utils/api";
+import { useApiWrapper } from "../utils/api";
 import { Amplify, API } from "aws-amplify";
 import awsconfig from "../aws-exports";
 import { useAuth0ConsentWrapper } from "../utils/misc";
@@ -21,6 +21,7 @@ export const CatalogComponent = () => {
 
   const { handleConsent, handleLoginAgain, handle } = useAuth0ConsentWrapper();
   const { handleDocument } = useHandleDocumentWrapper();
+  const { getItems } = useApiWrapper();
   const { getAccessTokenSilently, user } = useAuth0();
 
   const history = useHistory();
@@ -41,7 +42,6 @@ export const CatalogComponent = () => {
       if (authorizedToDelete) {
         await API.del(apiName, path, { headers });
         const { data, showResult, authorized, error } = await getItems(
-          token,
           user.anycompany_roles
         );
         setState({
@@ -67,9 +67,7 @@ export const CatalogComponent = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const token = await getAccessTokenSilently();
       const { data, showResult, authorized, error } = await getItems(
-        token,
         user.anycompany_roles
       );
       setState({
