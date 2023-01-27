@@ -1,23 +1,21 @@
+import { useAuth0 } from "@auth0/auth0-react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { useState } from "react";
 import { NavLink as RouterNavLink } from "react-router-dom";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-
 import {
+  Button,
   Collapse,
   Container,
+  DropdownItem,
+  DropdownMenu,
+  DropdownToggle,
+  Nav,
   Navbar,
   NavbarToggler,
-  Nav,
   NavItem,
   NavLink,
-  Button,
   UncontrolledDropdown,
-  DropdownToggle,
-  DropdownMenu,
-  DropdownItem,
 } from "reactstrap";
-
-import { useAuth0 } from "@auth0/auth0-react";
 
 const NavBar = () => {
   const [isOpen, setIsOpen] = useState(false);

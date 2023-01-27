@@ -1,15 +1,17 @@
-import React, { useState, useEffect } from "react";
-import { useHistory } from "react-router-dom";
-import { Button, Alert } from "reactstrap";
 import { useAuth0, withAuthenticationRequired } from "@auth0/auth0-react";
+import { Amplify, API } from "aws-amplify";
 import axios from "axios";
+import React, { useEffect, useState } from "react";
+import { useHistory } from "react-router-dom";
+import { Alert, Button } from "reactstrap";
+import awsconfig from "../aws-exports";
 import Loading from "../components/Loading";
 import { authorized } from "../utils/authorization";
-import { timeout } from "../utils/misc";
-import { Amplify, API } from "aws-amplify";
-import awsconfig from "../aws-exports";
-import { useAuth0ConsentWrapper } from "../utils/misc";
-import { useHandleDocumentWrapper } from "../utils/misc";
+import {
+  timeout,
+  useAuth0ConsentWrapper,
+  useHandleDocumentWrapper,
+} from "../utils/misc";
 import { useGetPresignedUrlWrapper } from "../utils/s3";
 
 Amplify.configure(awsconfig);

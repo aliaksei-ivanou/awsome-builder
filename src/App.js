@@ -1,24 +1,24 @@
+import { useAuth0 } from "@auth0/auth0-react";
 import React from "react";
-import { Router, Route, Switch } from "react-router-dom";
+import { Route, Router, Switch } from "react-router-dom";
 import { Container } from "reactstrap";
-
+import Footer from "./components/Footer";
 import Loading from "./components/Loading";
 import NavBar from "./components/NavBar";
-import Footer from "./components/Footer";
-import Home from "./views/Home";
-import Profile from "./views/Profile";
+import history from "./utils/history";
 import Catalog from "./views/Catalog";
 import CatalogAdd from "./views/CatalogAdd";
 import CatalogEdit from "./views/CatalogEdit";
+import Home from "./views/Home";
 import Orders from "./views/Orders";
-import { useAuth0 } from "@auth0/auth0-react";
-import history from "./utils/history";
+import Profile from "./views/Profile";
 
 // styles
 import "./App.css";
 
 // fontawesome
 import initFontAwesome from "./utils/initFontAwesome";
+
 initFontAwesome();
 
 const App = () => {

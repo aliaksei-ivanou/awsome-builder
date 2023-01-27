@@ -1,7 +1,7 @@
-import { authorized } from "../utils/authorization";
+import { useAuth0 } from "@auth0/auth0-react";
 import { Amplify, API } from "aws-amplify";
 import awsconfig from "../aws-exports";
-import { useAuth0 } from "@auth0/auth0-react";
+import { authorized } from "../utils/authorization";
 
 Amplify.configure(awsconfig);
 

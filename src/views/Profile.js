@@ -1,9 +1,8 @@
+import { useAuth0, withAuthenticationRequired } from "@auth0/auth0-react";
 import React from "react";
-import { Container, Row, Col } from "reactstrap";
-
+import { Col, Container, Row } from "reactstrap";
 import Highlight from "../components/Highlight";
 import Loading from "../components/Loading";
-import { useAuth0, withAuthenticationRequired } from "@auth0/auth0-react";
 
 export const ProfileComponent = () => {
   const { user } = useAuth0();

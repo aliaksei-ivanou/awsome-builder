@@ -1,14 +1,17 @@
-import React, { useState, useEffect } from "react";
-import { useHistory } from "react-router-dom";
-import { Button, Alert } from "reactstrap";
 import { useAuth0, withAuthenticationRequired } from "@auth0/auth0-react";
-import Loading from "../components/Loading";
-import { authorized } from "../utils/authorization";
-import { useApiWrapper } from "../utils/api";
 import { Amplify, API } from "aws-amplify";
+import React, { useEffect, useState } from "react";
+import { useHistory } from "react-router-dom";
+import { Alert, Button } from "reactstrap";
 import awsconfig from "../aws-exports";
-import { useAuth0ConsentWrapper } from "../utils/misc";
-import { useHandleDocumentWrapper } from "../utils/misc";
+import Loading from "../components/Loading";
+import { useApiWrapper } from "../utils/api";
+import { authorized } from "../utils/authorization";
+import {
+  useAuth0ConsentWrapper,
+  useHandleDocumentWrapper,
+} from "../utils/misc";
+
 Amplify.configure(awsconfig);
 
 export const CatalogComponent = () => {

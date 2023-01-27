@@ -1,13 +1,15 @@
-import React, { useState } from "react";
-import { Button, Alert } from "reactstrap";
 import { useAuth0, withAuthenticationRequired } from "@auth0/auth0-react";
+import { Amplify, API } from "aws-amplify";
 import axios from "axios";
+import React, { useState } from "react";
+import { Alert, Button } from "reactstrap";
+import awsconfig from "../aws-exports";
 import Loading from "../components/Loading";
 import { authorized } from "../utils/authorization";
-import { Amplify, API } from "aws-amplify";
-import awsconfig from "../aws-exports";
-import { useAuth0ConsentWrapper } from "../utils/misc";
-import { useHandleDocumentWrapper } from "../utils/misc";
+import {
+  useAuth0ConsentWrapper,
+  useHandleDocumentWrapper,
+} from "../utils/misc";
 import { useGetPresignedUrlWrapper } from "../utils/s3";
 
 Amplify.configure(awsconfig);

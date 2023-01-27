@@ -1,14 +1,15 @@
+import { Auth0Provider } from "@auth0/auth0-react";
+import { Amplify } from "aws-amplify";
 import React from "react";
 import ReactDOM from "react-dom/client";
-import "./index.css";
 import App from "./App";
-import * as serviceWorker from "./serviceWorker";
-import { Auth0Provider } from "@auth0/auth0-react";
-import history from "./utils/history";
-import { getConfig } from "./config";
-
-import { Amplify } from "aws-amplify";
 import awsExports from "./aws-exports";
+import { getConfig } from "./config";
+import * as serviceWorker from "./serviceWorker";
+import history from "./utils/history";
+
+import "./index.css";
+
 Amplify.configure(awsExports);
 
 const onRedirectCallback = (appState) => {
