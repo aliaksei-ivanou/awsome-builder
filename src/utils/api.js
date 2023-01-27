@@ -34,8 +34,8 @@ const getData = async (token, roles, apiName, path) => {
   return state;
 };
 
-export const GetItems = async (token, roles) =>
+export const getItems = async (token, roles) =>
   getData(token, roles, "itemsApi", "/items");
 
-export const GetOrders = async (token, roles) =>
+export const getOrders = async (token, roles) =>
   getData(token, roles, "ordersApi", "/orders");

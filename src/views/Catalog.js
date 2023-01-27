@@ -5,7 +5,7 @@ import { useAuth0, withAuthenticationRequired } from "@auth0/auth0-react";
 import Loading from "../components/Loading";
 import { authorized } from "../utils/authorization";
 import { handleDocument } from "../utils/misc";
-import { GetItems } from "../utils/api";
+import { getItems } from "../utils/api";
 import { Amplify, API } from "aws-amplify";
 import awsconfig from "../aws-exports";
 
@@ -43,7 +43,7 @@ export const CatalogComponent = () => {
       });
     }
 
-    const result = await GetItems(state.token, roles);
+    const result = await getItems(state.token, roles);
     setState({
       ...state,
       products: result.products,
@@ -67,7 +67,7 @@ export const CatalogComponent = () => {
       });
     }
 
-    const result = await GetItems(state.token, roles);
+    const result = await getItems(state.token, roles);
     setState({
       ...state,
       products: result.products,
@@ -83,32 +83,30 @@ export const CatalogComponent = () => {
   };
 
   const handleDelete = async (id) => {
-    const token = await getAccessTokenSilently();
-    const apiName = "itemsApi";
-    const path = `/items/object/${id}`;
-    const myInit = {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    };
-
     try {
-      if (authorized(roles, path, "DELETE")) {
-        await API.del(apiName, path, myInit);
-        const result = await GetItems(state.token, roles);
+      const token = await getAccessTokenSilently();
+      const apiName = "itemsApi";
+      const path = `/items/object/${id}`;
+      const headers = {
+        Authorization: `Bearer ${token}`,
+      };
+      const authorizedToDelete = authorized(roles, path, "DELETE");
+      if (authorizedToDelete) {
+        await API.del(apiName, path, { headers });
+        const items = await getItems(token, roles);
         setState({
           ...state,
-          products: result.data,
-          showResult: result.showResult,
-          authorized: result.authorized,
-          error: result.error,
-          token: token,
+          products: items.data,
+          showResult: items.showResult,
+          authorized: items.authorized,
+          error: items.error,
+          token,
         });
       } else {
         setState({
           ...state,
           authorized: false,
-          token: token,
+          token,
         });
       }
     } catch (error) {
@@ -120,18 +118,22 @@ export const CatalogComponent = () => {
   };
 
   useEffect(() => {
-    (async () => {
+    const fetchData = async () => {
       const token = await getAccessTokenSilently();
-      const result = await GetItems(token, roles);
+      const { data, showResult, authorized, error } = await getItems(
+        token,
+        roles
+      );
       setState({
         ...state,
-        products: result.data,
-        showResult: result.showResult,
-        authorized: result.authorized,
-        error: result.error,
-        token: token,
+        products: data,
+        showResult,
+        authorized,
+        error,
+        token,
       });
-    })();
+    };
+    fetchData();
   }, []);
 
   return (

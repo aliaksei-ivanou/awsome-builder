@@ -70,38 +70,25 @@ export const CatalogAddComponent = () => {
   };
 
   const handleUpload = async (file) => {
-    const token = await getAccessTokenSilently();
-    await getPresignedUrl(file.name, "putObject", token)
-      .then((signedRequest) => {
-        console.log("Recieved a signed request " + signedRequest);
-        var options = {
-          headers: {
-            "Content-Type": file.type,
-          },
-        };
-        axios
-          .put(signedRequest, file, options)
-          .then((result) => {
-            console.log("Response from s3");
-            console.log(result);
-            setState({
-              ...state,
-              success: true,
-              documentation: file.name,
-              token: token,
-            });
-          })
-          .catch((error) => {
-            console.log("ERROR " + error);
-          });
-      })
-      .catch((error) => {
-        console.log(error);
+    try {
+      const signedRequest = await getPresignedUrl(
+        file.name,
+        "putObject",
+        token
+      );
+      const options = { headers: { "Content-Type": file.type } };
+      await axios.put(signedRequest, file, options);
+      setState({
+        ...state,
+        success: true,
+        documentation: file.name,
       });
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const postProduct = async () => {
-    const token = await getAccessTokenSilently();
     const apiName = "itemsApi";
     const path = "/items";
     const myInit = {
@@ -118,38 +105,37 @@ export const CatalogAddComponent = () => {
     };
 
     if (
-      state.name === "" ||
-      state.description === "" ||
-      state.price === "" ||
-      state.documentation === "" ||
-      state.quantity === ""
+      !state.name ||
+      !state.description ||
+      !state.price ||
+      !state.documentation ||
+      !state.quantity
     ) {
       setState({
         ...state,
         emptyFields: true,
         dataSent: false,
-        token: token,
       });
       return;
     }
+
+    if (!authorized(roles, path, "POST")) {
+      setState({
+        ...state,
+        dataSent: false,
+        authorized: false,
+      });
+      return;
+    }
+
     try {
-      if (authorized(roles, path, "POST")) {
-        await API.post(apiName, path, myInit);
-        setState({
-          ...state,
-          dataSent: true,
-          authorized: true,
-          emptyFields: false,
-          token: token,
-        });
-      } else {
-        setState({
-          ...state,
-          dataSent: false,
-          authorized: false,
-          token: token,
-        });
-      }
+      await API.post(apiName, path, myInit);
+      setState({
+        ...state,
+        dataSent: true,
+        authorized: true,
+        emptyFields: false,
+      });
     } catch (error) {
       console.log(error);
       setState({
@@ -160,14 +146,13 @@ export const CatalogAddComponent = () => {
     }
   };
 
+  const [token, setToken] = useState(null);
   useEffect(() => {
-    (async () => {
+    const fetchToken = async () => {
       const token = await getAccessTokenSilently();
-      setState({
-        ...state,
-        token: token,
-      });
-    })();
+      setToken(token);
+    };
+    fetchToken();
   }, []);
 
   return (
@@ -270,9 +255,7 @@ export const CatalogAddComponent = () => {
               The file is successfully uploaded:{" "}
               <a
                 href="#/"
-                onClick={(e) =>
-                  handleDocument(state.token, state.documentation)
-                }
+                onClick={(e) => handleDocument(token, state.documentation)}
               >
                 {state.documentation}
               </a>

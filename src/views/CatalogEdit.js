@@ -84,25 +84,26 @@ export const CatalogAddComponent = () => {
       },
     };
     try {
-      if (authorized(roles, path, "GET")) {
-        const response = await API.get(apiName, path, myInit);
-        setState({
-          ...state,
-          authorized: true,
-          name: response.productName,
-          description: response.productDescription,
-          price: response.productPrice,
-          quantity: response.productQuantity,
-          documentation: response.productDocumentation,
-          token: token,
-        });
-      } else {
+      if (!authorized(roles, path, "GET")) {
         setState({
           ...state,
           authorized: false,
           token: token,
         });
+        return;
       }
+
+      const response = await API.get(apiName, path, myInit);
+      setState({
+        ...state,
+        authorized: true,
+        name: response.productName,
+        description: response.productDescription,
+        price: response.productPrice,
+        quantity: response.productQuantity,
+        documentation: response.productDocumentation,
+        token: token,
+      });
     } catch (error) {
       console.log(error);
     }
@@ -110,62 +111,44 @@ export const CatalogAddComponent = () => {
 
   const handleUpload = async (file) => {
     const token = await getAccessTokenSilently();
-    await getPresignedUrl(file.name, "putObject", token)
-      .then((signedRequest) => {
-        console.log("Recieved a signed request " + signedRequest);
-        var options = {
-          headers: {
-            "Content-Type": file.type,
-          },
-        };
-        axios
-          .put(signedRequest, file, options)
-          .then((result) => {
-            console.log("Response from s3");
-            console.log(result);
-            getPresignedUrl(file.name, "getObject", token).then((url) => {
-              setState({
-                ...state,
-                success: true,
-                documentation: file.name,
-                url: url,
-                token: token,
-              });
-            });
-          })
-          .catch((error) => {
-            console.log("ERROR " + error);
-          });
-      })
-      .catch((error) => {
-        console.log(error);
+    try {
+      const signedRequest = await getPresignedUrl(
+        file.name,
+        "putObject",
+        token
+      );
+      const options = {
+        headers: {
+          "Content-Type": file.type,
+        },
+      };
+      await axios.put(signedRequest, file, options);
+      const url = await getPresignedUrl(file.name, "getObject", token);
+      setState({
+        ...state,
+        success: true,
+        documentation: file.name,
+        url: url,
+        token: token,
       });
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const updateProduct = async () => {
     const token = await getAccessTokenSilently();
     const apiName = "itemsApi";
     const path = "/items";
-    const myInit = {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-      body: {
-        product_id: window.location.pathname.split("/").pop(),
-        name: state.name,
-        description: state.description,
-        price: state.price,
-        quantity: state.quantity,
-        documentation: state.documentation,
-      },
-    };
+    const product_id = window.location.pathname.split("/").pop();
+    const { name, description, price, quantity, documentation } = state;
 
     if (
-      state.name === "" ||
-      state.description === "" ||
-      state.price === "" ||
-      state.documentation === "" ||
-      state.quantity === ""
+      name === "" ||
+      description === "" ||
+      price === "" ||
+      documentation === "" ||
+      quantity === ""
     ) {
       setState({
         ...state,
@@ -175,6 +158,21 @@ export const CatalogAddComponent = () => {
       });
       return;
     }
+
+    const myInit = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      body: {
+        product_id,
+        name,
+        description,
+        price,
+        quantity,
+        documentation,
+      },
+    };
+
     try {
       if (authorized(roles, path, "POST")) {
         await API.put(apiName, path, myInit);
