@@ -4,11 +4,11 @@ import { useAuth0, withAuthenticationRequired } from "@auth0/auth0-react";
 import axios from "axios";
 import Loading from "../components/Loading";
 import { authorized } from "../utils/authorization";
-import { handleDocument } from "../utils/misc";
 import { getPresignedUrl } from "../utils/s3";
 import { Amplify, API } from "aws-amplify";
 import awsconfig from "../aws-exports";
 import { useAuth0ConsentWrapper } from "../utils/misc";
+import { useHandleDocumentWrapper } from "../utils/misc";
 
 Amplify.configure(awsconfig);
 
@@ -27,7 +27,7 @@ export const CatalogAddComponent = () => {
   });
 
   const { handleConsent, handleLoginAgain, handle } = useAuth0ConsentWrapper();
-
+  const { handleDocument } = useHandleDocumentWrapper();
   const { getAccessTokenSilently, user } = useAuth0();
 
   const handleUpload = async (file) => {
@@ -223,12 +223,7 @@ export const CatalogAddComponent = () => {
           {state.success && (
             <Alert color="success">
               The file is successfully uploaded:{" "}
-              <a
-                href="#/"
-                onClick={(e) =>
-                  handleDocument(state.token, state.documentation)
-                }
-              >
+              <a href="#/" onClick={(e) => handleDocument(state.documentation)}>
                 {state.documentation}
               </a>
             </Alert>

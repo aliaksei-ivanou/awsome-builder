@@ -6,11 +6,11 @@ import axios from "axios";
 import Loading from "../components/Loading";
 import { authorized } from "../utils/authorization";
 import { getPresignedUrl } from "../utils/s3";
-import { handleDocument } from "../utils/misc";
 import { timeout } from "../utils/misc";
 import { Amplify, API } from "aws-amplify";
 import awsconfig from "../aws-exports";
 import { useAuth0ConsentWrapper } from "../utils/misc";
+import { useHandleDocumentWrapper } from "../utils/misc";
 
 Amplify.configure(awsconfig);
 
@@ -29,7 +29,7 @@ export const CatalogAddComponent = () => {
   });
 
   const { handleConsent, handleLoginAgain, handle } = useAuth0ConsentWrapper();
-
+  const { handleDocument } = useHandleDocumentWrapper();
   const { getAccessTokenSilently, user } = useAuth0();
 
   const history = useHistory();
@@ -271,10 +271,7 @@ export const CatalogAddComponent = () => {
           />
           <br />
           <label>
-            <a
-              href="#/"
-              onClick={(e) => handleDocument(state.token, state.documentation)}
-            >
+            <a href="#/" onClick={(e) => handleDocument(state.documentation)}>
               {state.documentation}
             </a>
           </label>

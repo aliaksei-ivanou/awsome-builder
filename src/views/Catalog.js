@@ -4,11 +4,11 @@ import { Button, Alert } from "reactstrap";
 import { useAuth0, withAuthenticationRequired } from "@auth0/auth0-react";
 import Loading from "../components/Loading";
 import { authorized } from "../utils/authorization";
-import { handleDocument } from "../utils/misc";
 import { getItems } from "../utils/api";
 import { Amplify, API } from "aws-amplify";
 import awsconfig from "../aws-exports";
 import { useAuth0ConsentWrapper } from "../utils/misc";
+import { useHandleDocumentWrapper } from "../utils/misc";
 Amplify.configure(awsconfig);
 
 export const CatalogComponent = () => {
@@ -20,7 +20,7 @@ export const CatalogComponent = () => {
   });
 
   const { handleConsent, handleLoginAgain, handle } = useAuth0ConsentWrapper();
-
+  const { handleDocument } = useHandleDocumentWrapper();
   const { getAccessTokenSilently, user } = useAuth0();
 
   const history = useHistory();
@@ -146,7 +146,9 @@ export const CatalogComponent = () => {
                       <a
                         href="#/"
                         onClick={(e) =>
-                          handleDocument(state.token, item.productDocumentation)
+                          handle(e, () =>
+                            handleDocument(item.productDocumentation)
+                          )
                         }
                       >
                         {item.productDocumentation}

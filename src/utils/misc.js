@@ -1,11 +1,17 @@
 import { getPresignedUrl } from "../utils/s3";
-import { useAuth0, withAuthenticationRequired } from "@auth0/auth0-react";
+import { useAuth0 } from "@auth0/auth0-react";
 
 export const timeout = (delay) => new Promise((res) => setTimeout(res, delay));
 
-export const handleDocument = async (token, filename) => {
-  const url = await getPresignedUrl(filename, "getObject", token);
-  window.open(url);
+export const useHandleDocumentWrapper = () => {
+  const { getAccessTokenSilently } = useAuth0();
+
+  const handleDocument = async (filename) => {
+    const token = await getAccessTokenSilently();
+    const url = await getPresignedUrl(filename, "getObject", token);
+    window.open(url);
+  };
+  return { handleDocument };
 };
 
 export const useAuth0ConsentWrapper = () => {
