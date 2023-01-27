@@ -8,7 +8,7 @@ import { handleDocument } from "../utils/misc";
 import { getItems } from "../utils/api";
 import { Amplify, API } from "aws-amplify";
 import awsconfig from "../aws-exports";
-
+import { useAuth0ConsentWrapper } from "../utils/misc";
 Amplify.configure(awsconfig);
 
 export const CatalogComponent = () => {
@@ -19,67 +19,11 @@ export const CatalogComponent = () => {
     error: null,
   });
 
-  const {
-    getAccessTokenSilently,
-    loginWithPopup,
-    getAccessTokenWithPopup,
-    user,
-  } = useAuth0();
+  const { handleConsent, handleLoginAgain, handle } = useAuth0ConsentWrapper();
+
+  const { getAccessTokenSilently, user } = useAuth0();
 
   const history = useHistory();
-
-  const handleConsent = async () => {
-    try {
-      await getAccessTokenWithPopup();
-      setState({
-        ...state,
-        error: null,
-      });
-    } catch (error) {
-      setState({
-        ...state,
-        error: error.error,
-      });
-    }
-
-    const result = await getItems(state.token, user.anycompany_roles);
-    setState({
-      ...state,
-      products: result.products,
-      showResult: result.showResult,
-      authorized: result.authorized,
-      error: result.error,
-    });
-  };
-
-  const handleLoginAgain = async () => {
-    try {
-      await loginWithPopup();
-      setState({
-        ...state,
-        error: null,
-      });
-    } catch (error) {
-      setState({
-        ...state,
-        error: error.error,
-      });
-    }
-
-    const result = await getItems(state.token, user.anycompany_roles);
-    setState({
-      ...state,
-      products: result.products,
-      showResult: result.showResult,
-      authorized: result.authorized,
-      error: result.error,
-    });
-  };
-
-  const handle = (e, fn) => {
-    e.preventDefault();
-    fn();
-  };
 
   const handleDelete = async (id) => {
     try {
@@ -96,13 +40,16 @@ export const CatalogComponent = () => {
       );
       if (authorizedToDelete) {
         await API.del(apiName, path, { headers });
-        const items = await getItems(token, user.anycompany_roles);
+        const { data, showResult, authorized, error } = await getItems(
+          token,
+          user.anycompany_roles
+        );
         setState({
           ...state,
-          products: items.data,
-          showResult: items.showResult,
-          authorized: items.authorized,
-          error: items.error,
+          products: data,
+          showResult,
+          authorized,
+          error,
           token,
         });
       } else {

@@ -8,6 +8,7 @@ import { handleDocument } from "../utils/misc";
 import { getPresignedUrl } from "../utils/s3";
 import { Amplify, API } from "aws-amplify";
 import awsconfig from "../aws-exports";
+import { useAuth0ConsentWrapper } from "../utils/misc";
 
 Amplify.configure(awsconfig);
 
@@ -25,49 +26,12 @@ export const CatalogAddComponent = () => {
     quantity: "",
   });
 
-  const {
-    getAccessTokenSilently,
-    loginWithPopup,
-    getAccessTokenWithPopup,
-    user,
-  } = useAuth0();
+  const { handleConsent, handleLoginAgain, handle } = useAuth0ConsentWrapper();
 
-  const handleConsent = async () => {
-    try {
-      await getAccessTokenWithPopup();
-      setState({
-        ...state,
-        error: null,
-      });
-    } catch (error) {
-      setState({
-        ...state,
-        error: error.error,
-      });
-    }
-  };
-
-  const handleLoginAgain = async () => {
-    try {
-      await loginWithPopup();
-      setState({
-        ...state,
-        error: null,
-      });
-    } catch (error) {
-      setState({
-        ...state,
-        error: error.error,
-      });
-    }
-  };
-
-  const handle = (e, fn) => {
-    e.preventDefault();
-    fn();
-  };
+  const { getAccessTokenSilently, user } = useAuth0();
 
   const handleUpload = async (file) => {
+    const token = await getAccessTokenSilently();
     try {
       const signedRequest = await getPresignedUrl(
         file.name,
@@ -80,6 +44,7 @@ export const CatalogAddComponent = () => {
         ...state,
         success: true,
         documentation: file.name,
+        token: token,
       });
     } catch (error) {
       console.log(error);
@@ -87,6 +52,7 @@ export const CatalogAddComponent = () => {
   };
 
   const postProduct = async () => {
+    const token = await getAccessTokenSilently();
     const apiName = "itemsApi";
     const path = "/items";
     const myInit = {
@@ -113,6 +79,7 @@ export const CatalogAddComponent = () => {
         ...state,
         emptyFields: true,
         dataSent: false,
+        token: token,
       });
       return;
     }
@@ -122,6 +89,7 @@ export const CatalogAddComponent = () => {
         ...state,
         dataSent: false,
         authorized: false,
+        token: token,
       });
       return;
     }
@@ -133,6 +101,7 @@ export const CatalogAddComponent = () => {
         dataSent: true,
         authorized: true,
         emptyFields: false,
+        token: token,
       });
     } catch (error) {
       console.log(error);
@@ -140,17 +109,20 @@ export const CatalogAddComponent = () => {
         ...state,
         data_fetched: true,
         showResult: true,
+        token: token,
       });
     }
   };
 
-  const [token, setToken] = useState(null);
   useEffect(() => {
-    const fetchToken = async () => {
+    const fetchData = async () => {
       const token = await getAccessTokenSilently();
-      setToken(token);
+      setState({
+        ...state,
+        token,
+      });
     };
-    fetchToken();
+    fetchData();
   }, []);
 
   return (
@@ -253,7 +225,9 @@ export const CatalogAddComponent = () => {
               The file is successfully uploaded:{" "}
               <a
                 href="#/"
-                onClick={(e) => handleDocument(token, state.documentation)}
+                onClick={(e) =>
+                  handleDocument(state.token, state.documentation)
+                }
               >
                 {state.documentation}
               </a>

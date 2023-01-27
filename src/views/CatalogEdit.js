@@ -10,6 +10,7 @@ import { handleDocument } from "../utils/misc";
 import { timeout } from "../utils/misc";
 import { Amplify, API } from "aws-amplify";
 import awsconfig from "../aws-exports";
+import { useAuth0ConsentWrapper } from "../utils/misc";
 
 Amplify.configure(awsconfig);
 
@@ -27,49 +28,11 @@ export const CatalogAddComponent = () => {
     quantity: "",
   });
 
-  const {
-    getAccessTokenSilently,
-    loginWithPopup,
-    getAccessTokenWithPopup,
-    user,
-  } = useAuth0();
+  const { handleConsent, handleLoginAgain, handle } = useAuth0ConsentWrapper();
+
+  const { getAccessTokenSilently, user } = useAuth0();
 
   const history = useHistory();
-
-  const handleConsent = async () => {
-    try {
-      await getAccessTokenWithPopup();
-      setState({
-        ...state,
-        error: null,
-      });
-    } catch (error) {
-      setState({
-        ...state,
-        error: error.error,
-      });
-    }
-  };
-
-  const handleLoginAgain = async () => {
-    try {
-      await loginWithPopup();
-      setState({
-        ...state,
-        error: null,
-      });
-    } catch (error) {
-      setState({
-        ...state,
-        error: error.error,
-      });
-    }
-  };
-
-  const handle = (e, fn) => {
-    e.preventDefault();
-    fn();
-  };
 
   const getProduct = async () => {
     const id = window.location.pathname.split("/").pop();

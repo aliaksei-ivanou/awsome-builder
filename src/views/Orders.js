@@ -8,6 +8,7 @@ import { getItems } from "../utils/api";
 import { getOrders } from "../utils/api";
 import { Amplify, API } from "aws-amplify";
 import awsconfig from "../aws-exports";
+import { useAuth0ConsentWrapper } from "../utils/misc";
 
 Amplify.configure(awsconfig);
 
@@ -20,59 +21,11 @@ export const OrdersComponent = () => {
     error: null,
   });
 
-  const {
-    getAccessTokenSilently,
-    loginWithPopup,
-    getAccessTokenWithPopup,
-    user,
-  } = useAuth0();
+  const { handleConsent, handleLoginAgain, handle } = useAuth0ConsentWrapper();
+
+  const { getAccessTokenSilently, user } = useAuth0();
 
   const history = useHistory();
-
-  const handleConsent = async () => {
-    const token = await getAccessTokenSilently();
-    try {
-      await getAccessTokenWithPopup();
-      setState({
-        ...state,
-        error: null,
-        token: token,
-      });
-    } catch (error) {
-      setState({
-        ...state,
-        error: error.error,
-        token: token,
-      });
-    }
-
-    await getOrders(token, user.anycompany_roles);
-  };
-
-  const handleLoginAgain = async () => {
-    const token = await getAccessTokenSilently();
-    try {
-      await loginWithPopup();
-      setState({
-        ...state,
-        error: null,
-        token: token,
-      });
-    } catch (error) {
-      setState({
-        ...state,
-        error: error.error,
-        token: token,
-      });
-    }
-
-    await getOrders(token, user.anycompany_roles);
-  };
-
-  const handle = (e, fn) => {
-    e.preventDefault();
-    fn();
-  };
 
   const handleDelete = async (id) => {
     const token = await getAccessTokenSilently();
