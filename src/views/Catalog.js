@@ -26,7 +26,6 @@ export const CatalogComponent = () => {
     user,
   } = useAuth0();
 
-  const roles = user.anycompany_roles;
   const history = useHistory();
 
   const handleConsent = async () => {
@@ -43,7 +42,7 @@ export const CatalogComponent = () => {
       });
     }
 
-    const result = await getItems(state.token, roles);
+    const result = await getItems(state.token, user.anycompany_roles);
     setState({
       ...state,
       products: result.products,
@@ -67,7 +66,7 @@ export const CatalogComponent = () => {
       });
     }
 
-    const result = await getItems(state.token, roles);
+    const result = await getItems(state.token, user.anycompany_roles);
     setState({
       ...state,
       products: result.products,
@@ -90,10 +89,14 @@ export const CatalogComponent = () => {
       const headers = {
         Authorization: `Bearer ${token}`,
       };
-      const authorizedToDelete = authorized(roles, path, "DELETE");
+      const authorizedToDelete = authorized(
+        user.anycompany_roles,
+        path,
+        "DELETE"
+      );
       if (authorizedToDelete) {
         await API.del(apiName, path, { headers });
-        const items = await getItems(token, roles);
+        const items = await getItems(token, user.anycompany_roles);
         setState({
           ...state,
           products: items.data,
@@ -122,7 +125,7 @@ export const CatalogComponent = () => {
       const token = await getAccessTokenSilently();
       const { data, showResult, authorized, error } = await getItems(
         token,
-        roles
+        user.anycompany_roles
       );
       setState({
         ...state,

@@ -34,8 +34,6 @@ export const CatalogAddComponent = () => {
     user,
   } = useAuth0();
 
-  const roles = user.anycompany_roles;
-
   const history = useHistory();
 
   const handleConsent = async () => {
@@ -84,7 +82,7 @@ export const CatalogAddComponent = () => {
       },
     };
     try {
-      if (!authorized(roles, path, "GET")) {
+      if (!authorized(user.anycompany_roles, path, "GET")) {
         setState({
           ...state,
           authorized: false,
@@ -174,7 +172,7 @@ export const CatalogAddComponent = () => {
     };
 
     try {
-      if (authorized(roles, path, "POST")) {
+      if (authorized(user.anycompany_roles, path, "POST")) {
         await API.put(apiName, path, myInit);
         setState({
           ...state,

@@ -32,8 +32,6 @@ export const CatalogAddComponent = () => {
     user,
   } = useAuth0();
 
-  const roles = user.anycompany_roles;
-
   const handleConsent = async () => {
     try {
       await getAccessTokenWithPopup();
@@ -119,7 +117,7 @@ export const CatalogAddComponent = () => {
       return;
     }
 
-    if (!authorized(roles, path, "POST")) {
+    if (!authorized(user.anycompany_roles, path, "POST")) {
       setState({
         ...state,
         dataSent: false,

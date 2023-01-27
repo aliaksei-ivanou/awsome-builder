@@ -27,8 +27,6 @@ export const OrdersComponent = () => {
     user,
   } = useAuth0();
 
-  const roles = user.anycompany_roles;
-
   const history = useHistory();
 
   const handleConsent = async () => {
@@ -48,7 +46,7 @@ export const OrdersComponent = () => {
       });
     }
 
-    await getOrders(token, roles);
+    await getOrders(token, user.anycompany_roles);
   };
 
   const handleLoginAgain = async () => {
@@ -68,7 +66,7 @@ export const OrdersComponent = () => {
       });
     }
 
-    await getOrders(token, roles);
+    await getOrders(token, user.anycompany_roles);
   };
 
   const handle = (e, fn) => {
@@ -87,9 +85,9 @@ export const OrdersComponent = () => {
     };
 
     try {
-      if (authorized(roles, path, "DELETE")) {
+      if (authorized(user.anycompany_roles, path, "DELETE")) {
         await API.del(apiName, path, myInit);
-        await getOrders(token, roles);
+        await getOrders(token, user.anycompany_roles);
       } else {
         setState({
           ...state,
@@ -107,8 +105,8 @@ export const OrdersComponent = () => {
   useEffect(() => {
     (async () => {
       const token = await getAccessTokenSilently();
-      const products = await getItems(token, roles);
-      const orders = await getOrders(token, roles);
+      const products = await getItems(token, user.anycompany_roles);
+      const orders = await getOrders(token, user.anycompany_roles);
       setState({
         ...state,
         products: products.data,
