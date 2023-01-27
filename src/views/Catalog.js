@@ -7,10 +7,8 @@ import awsconfig from "../aws-exports";
 import Loading from "../components/Loading";
 import { useApiWrapper } from "../utils/api";
 import { authorized } from "../utils/authorization";
-import {
-  useAuth0ConsentWrapper,
-  useHandleDocumentWrapper,
-} from "../utils/misc";
+import { useAuth0ConsentWrapper } from "../utils/misc";
+import { useGetPresignedUrlWrapper } from "../utils/s3";
 
 Amplify.configure(awsconfig);
 
@@ -23,7 +21,7 @@ export const CatalogComponent = () => {
   });
 
   const { handleConsent, handleLoginAgain, handle } = useAuth0ConsentWrapper();
-  const { handleDocument } = useHandleDocumentWrapper();
+  const { handleGetDocument } = useGetPresignedUrlWrapper();
   const { getItems } = useApiWrapper();
   const { getAccessTokenSilently, user } = useAuth0();
 
@@ -147,7 +145,7 @@ export const CatalogComponent = () => {
                         href="#/"
                         onClick={(e) =>
                           handle(e, () =>
-                            handleDocument(item.productDocumentation)
+                            handleGetDocument(item.productDocumentation)
                           )
                         }
                       >

@@ -29,5 +29,10 @@ export const useGetPresignedUrlWrapper = () => {
     }
   };
 
-  return { getPresignedUrl };
+  const handleGetDocument = async (filename) => {
+    const url = await getPresignedUrl(filename, "getObject");
+    window.open(url);
+  };
+
+  return { getPresignedUrl, handleGetDocument };
 };

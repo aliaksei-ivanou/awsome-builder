@@ -7,11 +7,7 @@ import { Alert, Button } from "reactstrap";
 import awsconfig from "../aws-exports";
 import Loading from "../components/Loading";
 import { authorized } from "../utils/authorization";
-import {
-  timeout,
-  useAuth0ConsentWrapper,
-  useHandleDocumentWrapper,
-} from "../utils/misc";
+import { timeout, useAuth0ConsentWrapper } from "../utils/misc";
 import { useGetPresignedUrlWrapper } from "../utils/s3";
 
 Amplify.configure(awsconfig);
@@ -31,9 +27,8 @@ export const CatalogAddComponent = () => {
   });
 
   const { handleConsent, handleLoginAgain, handle } = useAuth0ConsentWrapper();
-  const { handleDocument } = useHandleDocumentWrapper();
   const { getAccessTokenSilently, user } = useAuth0();
-  const { getPresignedUrl } = useGetPresignedUrlWrapper();
+  const { getPresignedUrl, handleGetDocument } = useGetPresignedUrlWrapper();
 
   const history = useHistory();
 
@@ -302,7 +297,10 @@ export const CatalogAddComponent = () => {
           />
           <br />
           <label>
-            <a href="#/" onClick={(e) => handleDocument(state.documentation)}>
+            <a
+              href="#/"
+              onClick={(e) => handleGetDocument(state.documentation)}
+            >
               {state.documentation}
             </a>
           </label>
