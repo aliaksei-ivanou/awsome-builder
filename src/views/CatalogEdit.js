@@ -1,6 +1,5 @@
 import { useAuth0, withAuthenticationRequired } from "@auth0/auth0-react";
 import { Amplify, API } from "aws-amplify";
-import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import { Alert, Button } from "reactstrap";
@@ -28,7 +27,8 @@ export const CatalogAddComponent = () => {
 
   const { handleConsent, handleLoginAgain, handle } = useAuth0ConsentWrapper();
   const { getAccessTokenSilently, user } = useAuth0();
-  const { getPresignedUrl, handleGetDocument } = useGetPresignedUrlWrapper();
+  const { handleGetDocument, handleUploadDocument } =
+    useGetPresignedUrlWrapper();
 
   const history = useHistory();
 
@@ -63,29 +63,6 @@ export const CatalogAddComponent = () => {
           price: response.productPrice,
           quantity: response.productQuantity,
           documentation: response.productDocumentation,
-        };
-      });
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const handleUpload = async (file) => {
-    try {
-      const signedRequest = await getPresignedUrl(file.name, "putObject");
-      const options = {
-        headers: {
-          "Content-Type": file.type,
-        },
-      };
-      await axios.put(signedRequest, file, options);
-      const url = await getPresignedUrl(file.name, "getObject");
-      setState((prevState) => {
-        return {
-          ...prevState,
-          success: true,
-          documentation: file.name,
-          url: url,
         };
       });
     } catch (error) {
@@ -293,7 +270,17 @@ export const CatalogAddComponent = () => {
             type="file"
             id="item-documentation"
             name="item-documentation"
-            onChange={(e) => handleUpload(e.target.files[0])}
+            onChange={async (e) => {
+              const result = await handleUploadDocument(e.target.files[0]);
+              setState((prevState) => {
+                return {
+                  ...prevState,
+                  documentation: result.documentation,
+                  success: result.success,
+                  error: result.error,
+                };
+              });
+            }}
           />
           <br />
           <label>

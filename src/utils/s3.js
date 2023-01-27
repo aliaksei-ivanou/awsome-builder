@@ -1,5 +1,6 @@
 import { useAuth0 } from "@auth0/auth0-react";
 import { Amplify, API } from "aws-amplify";
+import axios from "axios";
 import awsconfig from "../aws-exports";
 
 Amplify.configure(awsconfig);
@@ -34,5 +35,25 @@ export const useGetPresignedUrlWrapper = () => {
     window.open(url);
   };
 
-  return { getPresignedUrl, handleGetDocument };
+  const handleUploadDocument = async (file) => {
+    try {
+      const signedRequest = await getPresignedUrl(file.name, "putObject");
+      const options = { headers: { "Content-Type": file.type } };
+      await axios.put(signedRequest, file, options);
+      return {
+        success: true,
+        documentation: file.name,
+        error: null,
+      };
+    } catch (error) {
+      console.log(error);
+      return {
+        success: false,
+        documentation: null,
+        error: error,
+      };
+    }
+  };
+
+  return { handleGetDocument, handleUploadDocument };
 };

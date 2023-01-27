@@ -1,6 +1,5 @@
 import { useAuth0, withAuthenticationRequired } from "@auth0/auth0-react";
 import { Amplify, API } from "aws-amplify";
-import axios from "axios";
 import React, { useState } from "react";
 import { Alert, Button } from "reactstrap";
 import awsconfig from "../aws-exports";
@@ -27,24 +26,8 @@ export const CatalogAddComponent = () => {
 
   const { handleConsent, handleLoginAgain, handle } = useAuth0ConsentWrapper();
   const { getAccessTokenSilently, user } = useAuth0();
-  const { getPresignedUrl, handleGetDocument } = useGetPresignedUrlWrapper();
-
-  const handleUpload = async (file) => {
-    try {
-      const signedRequest = await getPresignedUrl(file.name, "putObject");
-      const options = { headers: { "Content-Type": file.type } };
-      await axios.put(signedRequest, file, options);
-      setState((prevState) => {
-        return {
-          ...prevState,
-          success: true,
-          documentation: file.name,
-        };
-      });
-    } catch (error) {
-      console.log(error);
-    }
-  };
+  const { handleGetDocument, handleUploadDocument } =
+    useGetPresignedUrlWrapper();
 
   const postProduct = async () => {
     const token = await getAccessTokenSilently();
@@ -232,7 +215,17 @@ export const CatalogAddComponent = () => {
             type="file"
             id="item-documentation"
             name="item-documentation"
-            onChange={(e) => handleUpload(e.target.files[0])}
+            onChange={async (e) => {
+              const result = await handleUploadDocument(e.target.files[0]);
+              setState((prevState) => {
+                return {
+                  ...prevState,
+                  documentation: result.documentation,
+                  success: result.success,
+                  error: result.error,
+                };
+              });
+            }}
           />
           {state.success && (
             <Alert color="success">
