@@ -15,7 +15,7 @@ export const CatalogComponent = () => {
   const [state, setState] = useState({
     authorized: true,
     showResult: false,
-    apiMessage: "",
+    products: "",
     error: null,
   });
 
@@ -47,7 +47,7 @@ export const CatalogComponent = () => {
     const result = await GetItems(state.token, roles);
     setState({
       ...state,
-      apiMessage: result.apiMessage,
+      products: result.products,
       showResult: result.showResult,
       authorized: result.authorized,
       error: result.error,
@@ -71,7 +71,7 @@ export const CatalogComponent = () => {
     const result = await GetItems(state.token, roles);
     setState({
       ...state,
-      apiMessage: result.apiMessage,
+      products: result.products,
       showResult: result.showResult,
       authorized: result.authorized,
       error: result.error,
@@ -99,7 +99,7 @@ export const CatalogComponent = () => {
         const result = await GetItems(state.token, roles);
         setState({
           ...state,
-          apiMessage: result.apiMessage,
+          products: result.products,
           showResult: result.showResult,
           authorized: result.authorized,
           error: result.error,
@@ -126,7 +126,7 @@ export const CatalogComponent = () => {
       const result = await GetItems(token, roles);
       setState({
         ...state,
-        apiMessage: result.apiMessage,
+        products: result.products,
         showResult: result.showResult,
         authorized: result.authorized,
         error: result.error,
@@ -185,7 +185,7 @@ export const CatalogComponent = () => {
                 </tr>
               </thead>
               <tbody>
-                {state.apiMessage.map((item) => (
+                {state.products.map((item) => (
                   <tr>
                     <td>{item.productName}</td>
                     <td>{item.productDescription}</td>

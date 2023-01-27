@@ -4,7 +4,8 @@ import { Button, Alert } from "reactstrap";
 import { useAuth0, withAuthenticationRequired } from "@auth0/auth0-react";
 import Loading from "../components/Loading";
 import { authorized } from "../utils/authorization";
-import { GetPresignedUrl } from "../utils/s3";
+import { GetItems } from "../utils/api";
+import { GetOrders } from "../utils/api";
 import { Amplify, API } from "aws-amplify";
 import awsconfig from "../aws-exports";
 
@@ -14,7 +15,8 @@ export const OrdersComponent = () => {
   const [state, setState] = useState({
     authorized: true,
     showResult: false,
-    apiMessage: "",
+    products: "",
+    orders: "",
     error: null,
   });
 
@@ -30,37 +32,43 @@ export const OrdersComponent = () => {
   const history = useHistory();
 
   const handleConsent = async () => {
+    const token = await getAccessTokenSilently();
     try {
       await getAccessTokenWithPopup();
       setState({
         ...state,
         error: null,
+        token: token,
       });
     } catch (error) {
       setState({
         ...state,
         error: error.error,
+        token: token,
       });
     }
 
-    await getOrders();
+    await GetOrders(token, roles);
   };
 
   const handleLoginAgain = async () => {
+    const token = await getAccessTokenSilently();
     try {
       await loginWithPopup();
       setState({
         ...state,
         error: null,
+        token: token,
       });
     } catch (error) {
       setState({
         ...state,
         error: error.error,
+        token: token,
       });
     }
 
-    await getOrders();
+    await GetOrders(token, roles);
   };
 
   const handle = (e, fn) => {
@@ -81,76 +89,10 @@ export const OrdersComponent = () => {
     try {
       if (authorized(roles, path, "DELETE")) {
         await API.del(apiName, path, myInit);
-        await getOrders();
+        await GetOrders(token, roles);
       } else {
         setState({
           ...state,
-          authorized: false,
-        });
-      }
-    } catch (error) {
-      setState({
-        ...state,
-        error: error.error,
-      });
-    }
-  };
-
-  const getItems = async () => {
-    const token = await getAccessTokenSilently();
-    const apiName = "itemsApi";
-    const path = "/items";
-    const myInit = {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    };
-
-    try {
-      if (authorized(roles, path, "GET")) {
-        const responseData = await API.get(apiName, path, myInit);
-        setState({
-          ...state,
-          showResult: true,
-          apiMessage: responseData,
-        });
-      } else {
-        setState({
-          ...state,
-          showResult: false,
-          authorized: false,
-        });
-      }
-    } catch (error) {
-      setState({
-        ...state,
-        error: error.error,
-      });
-    }
-  };
-
-  const getOrders = async () => {
-    const token = await getAccessTokenSilently();
-    const apiName = "ordersApi";
-    const path = "/orders";
-    const myInit = {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    };
-
-    try {
-      if (authorized(roles, path, "GET")) {
-        const responseData = await API.get(apiName, path, myInit);
-        setState({
-          ...state,
-          showResult: true,
-          apiMessage: responseData,
-        });
-      } else {
-        setState({
-          ...state,
-          showResult: false,
           authorized: false,
         });
       }
@@ -163,7 +105,19 @@ export const OrdersComponent = () => {
   };
 
   useEffect(() => {
-    getOrders();
+    (async () => {
+      const token = await getAccessTokenSilently();
+      const products = await GetItems(token, roles);
+      const orders = await GetOrders(token, roles);
+      setState({
+        ...state,
+        products: products.products,
+        orders: orders.orders,
+        showResult: products.showResult && orders.showResult,
+        authorized: products.authorized && orders.authorized,
+        token: token,
+      });
+    })();
   }, []);
 
   return (
@@ -217,9 +171,15 @@ export const OrdersComponent = () => {
                 </tr>
               </thead>
               <tbody>
-                {state.apiMessage.map((item) => (
+                {state.orders.map((item) => (
                   <tr>
-                    <td>{item.productName}</td>
+                    <td>
+                      {
+                        state.products.find(
+                          (product) => product.product_id === item.product_id
+                        ).productName
+                      }
+                    </td>
                     <td>{item.orderedBy}</td>
                     <td>{item.orderDate}</td>
                     <td>{item.quantity}</td>
