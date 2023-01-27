@@ -5,12 +5,12 @@ import { useAuth0, withAuthenticationRequired } from "@auth0/auth0-react";
 import axios from "axios";
 import Loading from "../components/Loading";
 import { authorized } from "../utils/authorization";
-import { getPresignedUrl } from "../utils/s3";
 import { timeout } from "../utils/misc";
 import { Amplify, API } from "aws-amplify";
 import awsconfig from "../aws-exports";
 import { useAuth0ConsentWrapper } from "../utils/misc";
 import { useHandleDocumentWrapper } from "../utils/misc";
+import { useGetPresignedUrlWrapper } from "../utils/s3";
 
 Amplify.configure(awsconfig);
 
@@ -31,6 +31,7 @@ export const CatalogAddComponent = () => {
   const { handleConsent, handleLoginAgain, handle } = useAuth0ConsentWrapper();
   const { handleDocument } = useHandleDocumentWrapper();
   const { getAccessTokenSilently, user } = useAuth0();
+  const { getPresignedUrl } = useGetPresignedUrlWrapper();
 
   const history = useHistory();
 
@@ -84,7 +85,7 @@ export const CatalogAddComponent = () => {
         },
       };
       await axios.put(signedRequest, file, options);
-      const url = await getPresignedUrl(file.name, "getObject", token);
+      const url = await getPresignedUrl(file.name, "getObject");
       setState({
         ...state,
         success: true,
