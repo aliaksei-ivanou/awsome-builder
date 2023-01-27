@@ -186,7 +186,7 @@ export const CatalogComponent = () => {
               </thead>
               <tbody>
                 {state.products.map((item) => (
-                  <tr>
+                  <tr key={item.product_id}>
                     <td>{item.productName}</td>
                     <td>{item.productDescription}</td>
                     <td>{item.productPrice}</td>
