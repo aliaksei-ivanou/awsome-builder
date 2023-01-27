@@ -5,7 +5,6 @@ import { useAuth0, withAuthenticationRequired } from "@auth0/auth0-react";
 import Loading from "../components/Loading";
 import { authorized } from "../utils/authorization";
 import { useApiWrapper } from "../utils/api";
-import { getOrders } from "../utils/api";
 import { Amplify, API } from "aws-amplify";
 import awsconfig from "../aws-exports";
 import { useAuth0ConsentWrapper } from "../utils/misc";
