@@ -5,7 +5,7 @@ import { useAuth0, withAuthenticationRequired } from "@auth0/auth0-react";
 import axios from "axios";
 import Loading from "../components/Loading";
 import { authorized } from "../utils/authorization";
-import { GetPresignedUrl } from "../utils/s3";
+import { getPresignedUrl } from "../utils/s3";
 import { handleDocument } from "../utils/misc";
 import { timeout } from "../utils/misc";
 import { Amplify, API } from "aws-amplify";
@@ -110,7 +110,7 @@ export const CatalogAddComponent = () => {
 
   const handleUpload = async (file) => {
     const token = await getAccessTokenSilently();
-    await GetPresignedUrl(file.name, "putObject", token)
+    await getPresignedUrl(file.name, "putObject", token)
       .then((signedRequest) => {
         console.log("Recieved a signed request " + signedRequest);
         var options = {
@@ -123,7 +123,7 @@ export const CatalogAddComponent = () => {
           .then((result) => {
             console.log("Response from s3");
             console.log(result);
-            GetPresignedUrl(file.name, "getObject", token).then((url) => {
+            getPresignedUrl(file.name, "getObject", token).then((url) => {
               setState({
                 ...state,
                 success: true,

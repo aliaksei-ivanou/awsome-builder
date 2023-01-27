@@ -111,8 +111,8 @@ export const OrdersComponent = () => {
       const orders = await GetOrders(token, roles);
       setState({
         ...state,
-        products: products.products,
-        orders: orders.orders,
+        products: products.data,
+        orders: orders.data,
         showResult: products.showResult && orders.showResult,
         authorized: products.authorized && orders.authorized,
         token: token,

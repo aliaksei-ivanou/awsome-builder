@@ -27,7 +27,6 @@ export const CatalogComponent = () => {
   } = useAuth0();
 
   const roles = user.anycompany_roles;
-
   const history = useHistory();
 
   const handleConsent = async () => {
@@ -99,7 +98,7 @@ export const CatalogComponent = () => {
         const result = await GetItems(state.token, roles);
         setState({
           ...state,
-          products: result.products,
+          products: result.data,
           showResult: result.showResult,
           authorized: result.authorized,
           error: result.error,
@@ -126,7 +125,7 @@ export const CatalogComponent = () => {
       const result = await GetItems(token, roles);
       setState({
         ...state,
-        products: result.products,
+        products: result.data,
         showResult: result.showResult,
         authorized: result.authorized,
         error: result.error,

@@ -1,23 +1,27 @@
+import { useState } from "react";
 import { Amplify, API } from "aws-amplify";
 import awsconfig from "../aws-exports";
+import axios from "axios";
 
 Amplify.configure(awsconfig);
 
-export const GetPresignedUrl = async (fileName, action, token) => {
+export const getPresignedUrl = async (fileName, action, token) => {
   const apiName = "itemsApi";
   const path = "/items/sign-s3";
-  const myInit = {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-    body: {
-      fileName: fileName,
-      action: action,
-    },
+  const headers = {
+    Authorization: `Bearer ${token}`,
+  };
+  const body = {
+    fileName,
+    action,
   };
 
-  const response = await API.post(apiName, path, myInit);
-  const signedRequest = response.signedRequest;
-  console.log("Recieved a signed request " + signedRequest);
-  return signedRequest;
+  try {
+    const response = await API.post(apiName, path, { headers, body });
+    console.log(`Received a signed request ${response.signedRequest}`);
+    return response.signedRequest;
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
 };

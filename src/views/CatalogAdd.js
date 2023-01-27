@@ -5,7 +5,7 @@ import axios from "axios";
 import Loading from "../components/Loading";
 import { authorized } from "../utils/authorization";
 import { handleDocument } from "../utils/misc";
-import { GetPresignedUrl } from "../utils/s3";
+import { getPresignedUrl } from "../utils/s3";
 import { Amplify, API } from "aws-amplify";
 import awsconfig from "../aws-exports";
 
@@ -71,7 +71,7 @@ export const CatalogAddComponent = () => {
 
   const handleUpload = async (file) => {
     const token = await getAccessTokenSilently();
-    await GetPresignedUrl(file.name, "putObject", token)
+    await getPresignedUrl(file.name, "putObject", token)
       .then((signedRequest) => {
         console.log("Recieved a signed request " + signedRequest);
         var options = {
