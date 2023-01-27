@@ -10,6 +10,7 @@ import Profile from "./views/Profile";
 import Catalog from "./views/Catalog";
 import CatalogAdd from "./views/CatalogAdd";
 import CatalogEdit from "./views/CatalogEdit";
+import Orders from "./views/Orders";
 import { useAuth0 } from "@auth0/auth0-react";
 import history from "./utils/history";
 
@@ -42,6 +43,7 @@ const App = () => {
             <Route path="/catalog" exact component={Catalog} />
             <Route path="/catalog/add-product" exact component={CatalogAdd} />
             <Route path="/catalog/edit-product" component={CatalogEdit} />
+            <Route path="/orders" exact component={Orders} />
           </Switch>
         </Container>
         <Footer />

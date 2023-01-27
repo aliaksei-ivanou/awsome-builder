@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Button, Alert } from "reactstrap";
 import { useAuth0, withAuthenticationRequired } from "@auth0/auth0-react";
 import axios from "axios";
 import Loading from "../components/Loading";
 import { authorized } from "../utils/authorization";
+import { handleDocument } from "../utils/misc";
 import { GetPresignedUrl } from "../utils/s3";
 import { Amplify, API } from "aws-amplify";
 import awsconfig from "../aws-exports";
@@ -87,6 +88,7 @@ export const CatalogAddComponent = () => {
               ...state,
               success: true,
               documentation: file.name,
+              token: token,
             });
           })
           .catch((error) => {
@@ -96,13 +98,6 @@ export const CatalogAddComponent = () => {
       .catch((error) => {
         console.log(error);
       });
-  };
-
-  const handleDocument = async (filename) => {
-    const token = await getAccessTokenSilently();
-    await GetPresignedUrl(filename, "getObject", token).then((url) => {
-      window.open(url);
-    });
   };
 
   const postProduct = async () => {
@@ -133,6 +128,7 @@ export const CatalogAddComponent = () => {
         ...state,
         emptyFields: true,
         dataSent: false,
+        token: token,
       });
       return;
     }
@@ -144,12 +140,14 @@ export const CatalogAddComponent = () => {
           dataSent: true,
           authorized: true,
           emptyFields: false,
+          token: token,
         });
       } else {
         setState({
           ...state,
           dataSent: false,
           authorized: false,
+          token: token,
         });
       }
     } catch (error) {
@@ -161,6 +159,16 @@ export const CatalogAddComponent = () => {
       });
     }
   };
+
+  useEffect(() => {
+    (async () => {
+      const token = await getAccessTokenSilently();
+      setState({
+        ...state,
+        token: token,
+      });
+    })();
+  }, []);
 
   return (
     <>
@@ -260,7 +268,12 @@ export const CatalogAddComponent = () => {
           {state.success && (
             <Alert color="success">
               The file is successfully uploaded:{" "}
-              <a href="#/" onClick={(e) => handleDocument(state.documentation)}>
+              <a
+                href="#/"
+                onClick={(e) =>
+                  handleDocument(state.token, state.documentation)
+                }
+              >
                 {state.documentation}
               </a>
             </Alert>

@@ -4,14 +4,13 @@ import { Button, Alert } from "reactstrap";
 import { useAuth0, withAuthenticationRequired } from "@auth0/auth0-react";
 import Loading from "../components/Loading";
 import { authorized } from "../utils/authorization";
-import { handleDocument } from "../utils/misc";
-import { GetItems } from "../utils/api";
+import { GetPresignedUrl } from "../utils/s3";
 import { Amplify, API } from "aws-amplify";
 import awsconfig from "../aws-exports";
 
 Amplify.configure(awsconfig);
 
-export const CatalogComponent = () => {
+export const OrdersComponent = () => {
   const [state, setState] = useState({
     authorized: true,
     showResult: false,
@@ -44,14 +43,7 @@ export const CatalogComponent = () => {
       });
     }
 
-    const result = await GetItems(state.token, roles);
-    setState({
-      ...state,
-      apiMessage: result.apiMessage,
-      showResult: result.showResult,
-      authorized: result.authorized,
-      error: result.error,
-    });
+    await getOrders();
   };
 
   const handleLoginAgain = async () => {
@@ -68,14 +60,7 @@ export const CatalogComponent = () => {
       });
     }
 
-    const result = await GetItems(state.token, roles);
-    setState({
-      ...state,
-      apiMessage: result.apiMessage,
-      showResult: result.showResult,
-      authorized: result.authorized,
-      error: result.error,
-    });
+    await getOrders();
   };
 
   const handle = (e, fn) => {
@@ -85,8 +70,8 @@ export const CatalogComponent = () => {
 
   const handleDelete = async (id) => {
     const token = await getAccessTokenSilently();
-    const apiName = "itemsApi";
-    const path = `/items/object/${id}`;
+    const apiName = "ordersApi";
+    const path = `/orders/object/${id}`;
     const myInit = {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -96,20 +81,77 @@ export const CatalogComponent = () => {
     try {
       if (authorized(roles, path, "DELETE")) {
         await API.del(apiName, path, myInit);
-        const result = await GetItems(state.token, roles);
-        setState({
-          ...state,
-          apiMessage: result.apiMessage,
-          showResult: result.showResult,
-          authorized: result.authorized,
-          error: result.error,
-          token: token,
-        });
+        await getOrders();
       } else {
         setState({
           ...state,
           authorized: false,
-          token: token,
+        });
+      }
+    } catch (error) {
+      setState({
+        ...state,
+        error: error.error,
+      });
+    }
+  };
+
+  const getItems = async () => {
+    const token = await getAccessTokenSilently();
+    const apiName = "itemsApi";
+    const path = "/items";
+    const myInit = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
+
+    try {
+      if (authorized(roles, path, "GET")) {
+        const responseData = await API.get(apiName, path, myInit);
+        setState({
+          ...state,
+          showResult: true,
+          apiMessage: responseData,
+        });
+      } else {
+        setState({
+          ...state,
+          showResult: false,
+          authorized: false,
+        });
+      }
+    } catch (error) {
+      setState({
+        ...state,
+        error: error.error,
+      });
+    }
+  };
+
+  const getOrders = async () => {
+    const token = await getAccessTokenSilently();
+    const apiName = "ordersApi";
+    const path = "/orders";
+    const myInit = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
+
+    try {
+      if (authorized(roles, path, "GET")) {
+        const responseData = await API.get(apiName, path, myInit);
+        setState({
+          ...state,
+          showResult: true,
+          apiMessage: responseData,
+        });
+      } else {
+        setState({
+          ...state,
+          showResult: false,
+          authorized: false,
         });
       }
     } catch (error) {
@@ -121,18 +163,7 @@ export const CatalogComponent = () => {
   };
 
   useEffect(() => {
-    (async () => {
-      const token = await getAccessTokenSilently();
-      const result = await GetItems(token, roles);
-      setState({
-        ...state,
-        apiMessage: result.apiMessage,
-        showResult: result.showResult,
-        authorized: result.authorized,
-        error: result.error,
-        token: token,
-      });
-    })();
+    getOrders();
   }, []);
 
   return (
@@ -156,11 +187,11 @@ export const CatalogComponent = () => {
         )}
         {!state.authorized && (
           <Alert color="warning">
-            You need to log in as an admin to access this resource
+            You need to log in as an admin or wholesaler to access this resource
           </Alert>
         )}
-        <h1>Widgets Catalog</h1>
-        <p className="lead">Manage the catalog items</p>
+        <h1>Orders Registry</h1>
+        <p className="lead">Manage orders</p>
       </div>
 
       <div className="result-block-container">
@@ -168,19 +199,20 @@ export const CatalogComponent = () => {
           <div>
             <Button
               color="primary"
-              onClick={() => history.push("/catalog/add-product")}
+              onClick={() => history.push("/orders/add-order")}
               style={{ float: "right" }}
             >
-              Add Product
+              Add Order
             </Button>
             <table className="table table-striped">
               <thead>
                 <tr>
                   <th scope="col">Product Name</th>
-                  <th scope="col">Product Description</th>
-                  <th scope="col">Product Price</th>
-                  <th scope="col">Product Quantity</th>
-                  <th scope="col">Product Documentation</th>
+                  <th scope="col">Ordered By</th>
+                  <th scope="col">Order Date</th>
+                  <th scope="col">Quantity</th>
+                  <th scope="col">Unit Cost</th>
+                  <th scope="col">Total Cost</th>
                   <th scope="col">Actions</th>
                 </tr>
               </thead>
@@ -188,26 +220,16 @@ export const CatalogComponent = () => {
                 {state.apiMessage.map((item) => (
                   <tr>
                     <td>{item.productName}</td>
-                    <td>{item.productDescription}</td>
-                    <td>{item.productPrice}</td>
-                    <td>{item.productQuantity}</td>
-                    <td>
-                      <a
-                        href="#/"
-                        onClick={(e) =>
-                          handleDocument(state.token, item.productDocumentation)
-                        }
-                      >
-                        {item.productDocumentation}
-                      </a>
-                    </td>
+                    <td>{item.orderedBy}</td>
+                    <td>{item.orderDate}</td>
+                    <td>{item.quantity}</td>
+                    <td>{item.unitCost}</td>
+                    <td>{item.totalCost}</td>
                     <td>
                       <Button
                         color="primary"
                         onClick={() =>
-                          history.push(
-                            `/catalog/edit-product/${item.product_id}`
-                          )
+                          history.push(`/orders/edit-order/${item.product_id}`)
                         }
                       >
                         Edit
@@ -230,6 +252,6 @@ export const CatalogComponent = () => {
   );
 };
 
-export default withAuthenticationRequired(CatalogComponent, {
+export default withAuthenticationRequired(OrdersComponent, {
   onRedirecting: () => <Loading />,
 });

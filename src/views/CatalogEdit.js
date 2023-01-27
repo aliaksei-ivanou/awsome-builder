@@ -6,6 +6,7 @@ import axios from "axios";
 import Loading from "../components/Loading";
 import { authorized } from "../utils/authorization";
 import { GetPresignedUrl } from "../utils/s3";
+import { handleDocument } from "../utils/misc";
 import { timeout } from "../utils/misc";
 import { Amplify, API } from "aws-amplify";
 import awsconfig from "../aws-exports";
@@ -72,13 +73,6 @@ export const CatalogAddComponent = () => {
     fn();
   };
 
-  const handleDocument = async (filename) => {
-    const token = await getAccessTokenSilently();
-    await GetPresignedUrl(filename, "getObject", token).then((url) => {
-      window.open(url);
-    });
-  };
-
   const getProduct = async () => {
     const id = window.location.pathname.split("/").pop();
     const token = await getAccessTokenSilently();
@@ -100,11 +94,13 @@ export const CatalogAddComponent = () => {
           price: response.productPrice,
           quantity: response.productQuantity,
           documentation: response.productDocumentation,
+          token: token,
         });
       } else {
         setState({
           ...state,
           authorized: false,
+          token: token,
         });
       }
     } catch (error) {
@@ -133,6 +129,7 @@ export const CatalogAddComponent = () => {
                 success: true,
                 documentation: file.name,
                 url: url,
+                token: token,
               });
             });
           })
@@ -174,6 +171,7 @@ export const CatalogAddComponent = () => {
         ...state,
         emptyFields: true,
         productUpdated: false,
+        token: token,
       });
       return;
     }
@@ -185,6 +183,7 @@ export const CatalogAddComponent = () => {
           productUpdated: true,
           authorized: true,
           emptyFields: false,
+          token: token,
         });
         // wait 2 seconds and redirect to catalog
         await timeout(2000);
@@ -194,6 +193,7 @@ export const CatalogAddComponent = () => {
           ...state,
           productUpdated: false,
           authorized: false,
+          token: token,
         });
       }
     } catch (error) {
@@ -202,6 +202,7 @@ export const CatalogAddComponent = () => {
         ...state,
         data_fetched: true,
         showResult: true,
+        token: token,
       });
     }
   };
@@ -311,7 +312,10 @@ export const CatalogAddComponent = () => {
           />
           <br />
           <label>
-            <a href="#/" onClick={(e) => handleDocument(state.documentation)}>
+            <a
+              href="#/"
+              onClick={(e) => handleDocument(state.token, state.documentation)}
+            >
               {state.documentation}
             </a>
           </label>
