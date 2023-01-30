@@ -1,12 +1,11 @@
 import { useAuth0, withAuthenticationRequired } from "@auth0/auth0-react";
-import { Amplify, API } from "aws-amplify";
+import { Amplify } from "aws-amplify";
 import React, { useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import { Alert, Button } from "reactstrap";
 import awsconfig from "../aws-exports";
 import Loading from "../components/Loading";
 import { useApiWrapper } from "../utils/api";
-import { authorized } from "../utils/authorization";
 import { useAuth0ConsentWrapper } from "../utils/misc";
 import { useGetPresignedUrlWrapper } from "../utils/s3";
 
@@ -18,30 +17,19 @@ export const CatalogComponent = () => {
     showResult: false,
     products: "",
     error: null,
+    refresf: true,
   });
 
   const { handleConsent, handleLoginAgain, handle } = useAuth0ConsentWrapper();
   const { handleGetDocument } = useGetPresignedUrlWrapper();
-  const { getItems } = useApiWrapper();
-  const { getAccessTokenSilently, user } = useAuth0();
+  const { getItems, deleteOrder } = useApiWrapper();
+  const { user } = useAuth0();
 
   const history = useHistory();
 
-  const handleDelete = async (id) => {
-    try {
-      const token = await getAccessTokenSilently();
-      const apiName = "itemsApi";
-      const path = `/items/object/${id}`;
-      const headers = {
-        Authorization: `Bearer ${token}`,
-      };
-      const authorizedToDelete = authorized(
-        user.anycompany_roles,
-        path,
-        "DELETE"
-      );
-      if (authorizedToDelete) {
-        await API.del(apiName, path, { headers });
+  useEffect(() => {
+    if (state.refresf) {
+      const fetchData = async () => {
         const { data, showResult, authorized, error } = await getItems(
           user.anycompany_roles
         );
@@ -52,37 +40,13 @@ export const CatalogComponent = () => {
             showResult,
             authorized,
             error,
+            refresf: false,
           };
         });
-      } else {
-        setState((prevState) => {
-          return {
-            ...prevState,
-            authorized: false,
-          };
-        });
-      }
-    } catch (error) {
-      setState((prevState) => {
-        return {
-          ...prevState,
-          error: error.error,
-        };
-      });
+      };
+      fetchData();
     }
-  };
-
-  useEffect(() => {
-    const fetchData = async () => {
-      const { data, showResult, authorized, error } = await getItems(
-        user.anycompany_roles
-      );
-      setState((prevState) => {
-        return { ...prevState, products: data, showResult, authorized, error };
-      });
-    };
-    fetchData();
-  }, []);
+  }, [state.refresf, getItems, user.anycompany_roles]);
 
   return (
     <>
@@ -165,7 +129,15 @@ export const CatalogComponent = () => {
                       </Button>
                       <Button
                         color="danger"
-                        onClick={() => handleDelete(item.product_id)}
+                        onClick={() => {
+                          deleteOrder(item.product_id);
+                          setState((prevState) => {
+                            return {
+                              ...prevState,
+                              refresf: true,
+                            };
+                          });
+                        }}
                       >
                         Delete
                       </Button>

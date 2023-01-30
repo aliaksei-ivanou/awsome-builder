@@ -33,6 +33,7 @@ export const useApiWrapper = () => {
         state.authorized = false;
       }
     } catch (error) {
+      console.log(error.error);
       state.error = error.error;
     }
 
@@ -43,5 +44,21 @@ export const useApiWrapper = () => {
 
   const getOrders = async (roles) => getData(roles, "ordersApi", "/orders");
 
-  return { getItems, getOrders };
+  const deleteData = async (id, apiName, path) => {
+    try {
+      const token = await getAccessTokenSilently();
+      const headers = {
+        Authorization: `Bearer ${token}`,
+      };
+      await API.del(apiName, path + id, { headers });
+    } catch (error) {
+      console.log(error.error);
+    }
+  };
+
+  const deleteOrder = async (id) => {
+    deleteData(id, "itemsApi", "/items/object/");
+  };
+
+  return { getItems, getOrders, deleteOrder };
 };
