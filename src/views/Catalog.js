@@ -17,18 +17,37 @@ export const CatalogComponent = () => {
     showResult: false,
     products: "",
     error: null,
-    refresf: true,
+    refresh: true,
   });
 
   const { handleConsent, handleLoginAgain, handle } = useAuth0ConsentWrapper();
   const { handleGetDocument } = useGetPresignedUrlWrapper();
-  const { getItems, deleteOrder } = useApiWrapper();
+  const { getItems, deleteData } = useApiWrapper();
   const { user } = useAuth0();
 
   const history = useHistory();
 
+  const handleDelete = async (id) => {
+    try {
+      await deleteData(id, "itemsApi", "/items/object/");
+      setState((prevState) => {
+        return {
+          ...prevState,
+          refresh: true,
+        };
+      });
+    } catch (error) {
+      setState((prevState) => {
+        return {
+          ...prevState,
+          error: error.error,
+        };
+      });
+    }
+  };
+
   useEffect(() => {
-    if (state.refresf) {
+    if (state.refresh) {
       const fetchData = async () => {
         const { data, showResult, authorized, error } = await getItems(
           user.anycompany_roles
@@ -40,13 +59,13 @@ export const CatalogComponent = () => {
             showResult,
             authorized,
             error,
-            refresf: false,
+            refresh: false,
           };
         });
       };
       fetchData();
     }
-  }, [state.refresf, getItems, user.anycompany_roles]);
+  }, [state.refresh, user.anycompany_roles, getItems]);
 
   return (
     <>
@@ -129,15 +148,7 @@ export const CatalogComponent = () => {
                       </Button>
                       <Button
                         color="danger"
-                        onClick={() => {
-                          deleteOrder(item.product_id);
-                          setState((prevState) => {
-                            return {
-                              ...prevState,
-                              refresf: true,
-                            };
-                          });
-                        }}
+                        onClick={() => handleDelete(item.product_id)}
                       >
                         Delete
                       </Button>

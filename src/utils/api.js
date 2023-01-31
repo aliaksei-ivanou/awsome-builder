@@ -56,9 +56,5 @@ export const useApiWrapper = () => {
     }
   };
 
-  const deleteOrder = async (id) => {
-    deleteData(id, "itemsApi", "/items/object/");
-  };
-
-  return { getItems, getOrders, deleteOrder };
+  return { getItems, getOrders, deleteData };
 };
