@@ -17,7 +17,6 @@ export const CatalogAddComponent = () => {
     emptyFields: false,
     error: null,
     success: false,
-    url: "",
     name: "",
     description: "",
     price: "",
