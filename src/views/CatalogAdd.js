@@ -179,14 +179,7 @@ export const CatalogAddComponent = () => {
             name="item-price"
             className="text-input"
             value={state.price}
-            onChange={(e) =>
-              setState((prevState) => {
-                return {
-                  ...prevState,
-                  price: e.target.value,
-                };
-              })
-            }
+            onChange={(e) => setState({ ...state, price: e.target.value })}
           />
         </div>
         <div className="item-input">
@@ -198,14 +191,7 @@ export const CatalogAddComponent = () => {
             name="item-quantity"
             className="text-input"
             value={state.quantity}
-            onChange={(e) =>
-              setState((prevState) => {
-                return {
-                  ...prevState,
-                  quantity: e.target.value,
-                };
-              })
-            }
+            onChange={(e) => setState({ ...state, quantity: e.target.value })}
           />
         </div>
         <div className="item-input">
