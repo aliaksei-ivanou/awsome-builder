@@ -73,10 +73,11 @@ export const CatalogAddComponent = () => {
         price: state.products.find(
           (product) => product.productName === state.product
         ).productPrice,
-        totalCost:
+        totalCost: parseFloat(
           state.products.find(
             (product) => product.productName === state.product
-          ).productPrice * state.quantity,
+          ).productPrice * state.quantity
+        ).toFixed(2),
       },
     };
 
@@ -244,9 +245,11 @@ export const CatalogAddComponent = () => {
               <label className="item-description">Total Cost</label>
               <br />
               <label className="item-description">
-                {state.products
-                  .filter((product) => product.productName === state.product)
-                  .map((product) => product.productPrice) * state.quantity}
+                {parseFloat(
+                  state.products
+                    .filter((product) => product.productName === state.product)
+                    .map((product) => product.productPrice) * state.quantity
+                ).toFixed(2) || 0}
               </label>
             </div>
             <div className="item-input">
