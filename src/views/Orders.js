@@ -18,6 +18,7 @@ export const OrdersComponent = () => {
     products: "",
     orders: "",
     error: null,
+    refresh: true,
   });
 
   const { handleConsent, handleLoginAgain, handle } = useAuth0ConsentWrapper();
@@ -26,10 +27,41 @@ export const OrdersComponent = () => {
 
   const history = useHistory();
 
-  const handleDelete = async (id) => {
+  const updateProduct = async (product_id, quantity) => {
+    const token = await getAccessTokenSilently();
+    const apiName = "itemsApi";
+    const path = "/items";
+
+    const myInit = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      body: {
+        product_id,
+        name: state.products.find(
+          (product) => product.product_id === product_id
+        ).productName,
+        description: state.products.find(
+          (product) => product.product_id === product_id
+        ).productDescription,
+        price: state.products.find(
+          (product) => product.product_id === product_id
+        ).productPrice,
+        quantity:
+          state.products.find((product) => product.product_id === product_id)
+            .productQuantity + quantity,
+        documentation: state.products.find(
+          (product) => product.product_id === product_id
+        ).productDocumentation,
+      },
+    };
+    await API.put(apiName, path, myInit);
+  };
+
+  const handleDelete = async (order_id, product_id, quantity) => {
     const token = await getAccessTokenSilently();
     const apiName = "ordersApi";
-    const path = `/orders/object/${id}`;
+    const path = `/orders/object/${order_id}/${product_id}`;
     const myInit = {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -39,6 +71,7 @@ export const OrdersComponent = () => {
     try {
       if (authorized(user.anycompany_roles, path, "DELETE")) {
         await API.del(apiName, path, myInit);
+        await updateProduct(product_id, quantity);
         await getOrders(user.anycompany_roles);
       } else {
         setState((prevState) => {
@@ -59,20 +92,23 @@ export const OrdersComponent = () => {
   };
 
   useEffect(() => {
-    (async () => {
-      const products = await getItems(user.anycompany_roles);
-      const orders = await getOrders(user.anycompany_roles);
-      setState((prevState) => {
-        return {
-          ...prevState,
-          products: products.data,
-          orders: orders.data,
-          showResult: products.showResult && orders.showResult,
-          authorized: products.authorized && orders.authorized,
-        };
-      });
-    })();
-  }, []);
+    if (state.refresh) {
+      const fetchData = async () => {
+        const products = await getItems(user.anycompany_roles);
+        const orders = await getOrders(user.anycompany_roles);
+        setState((prevState) => {
+          return {
+            ...prevState,
+            products: products.data,
+            orders: orders.data,
+            showResult: products.showResult && orders.showResult,
+            authorized: products.authorized && orders.authorized,
+          };
+        });
+      };
+      fetchData();
+    }
+  }, [state.refresh, user.anycompany_roles, getItems, getOrders]);
 
   return (
     <>
@@ -150,7 +186,13 @@ export const OrdersComponent = () => {
                       </Button>
                       <Button
                         color="danger"
-                        onClick={() => handleDelete(item.product_id)}
+                        onClick={() =>
+                          handleDelete(
+                            item.order_id,
+                            item.product_id,
+                            item.quantity
+                          )
+                        }
                       >
                         Delete
                       </Button>
