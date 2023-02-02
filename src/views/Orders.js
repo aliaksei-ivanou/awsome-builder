@@ -134,7 +134,7 @@ export const OrdersComponent = () => {
             You need to log in as an admin or wholesaler to access this resource
           </Alert>
         )}
-        <h1>Orders Registry</h1>
+        <h1>Orders</h1>
         <p className="lead">Manage orders</p>
       </div>
 
@@ -176,14 +176,6 @@ export const OrdersComponent = () => {
                     <td>{item.unitCost}</td>
                     <td>{item.totalCost}</td>
                     <td>
-                      <Button
-                        color="primary"
-                        onClick={() =>
-                          history.push(`/orders/edit-order/${item.product_id}`)
-                        }
-                      >
-                        Edit
-                      </Button>
                       <Button
                         color="danger"
                         onClick={() =>

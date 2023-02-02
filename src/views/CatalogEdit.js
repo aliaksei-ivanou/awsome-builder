@@ -184,7 +184,7 @@ export const CatalogAddComponent = () => {
           </Alert>
         )}
         <h1>Widgets Catalog</h1>
-        <p className="lead">Add a new Product to Widgets Catalog</p>
+        <p className="lead">Edit the Product</p>
       </div>
 
       <div className="item-input-container">
