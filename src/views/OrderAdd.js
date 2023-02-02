@@ -26,18 +26,48 @@ export const CatalogAddComponent = () => {
   const { getAccessTokenSilently, user } = useAuth0();
   const { getItems } = useApiWrapper();
 
-  const postOrder = async () => {
+  const updateProduct = async (product_id, quantity) => {
     const token = await getAccessTokenSilently();
-    const apiName = "ordersApi";
-    const path = "/orders";
+    const apiName = "itemsApi";
+    const path = "/items";
+
     const myInit = {
       headers: {
         Authorization: `Bearer ${token}`,
       },
       body: {
-        productId: state.products.find(
-          (product) => product.productName === state.product
-        ).product_id,
+        product_id,
+        name: state.products.find(
+          (product) => product.product_id === product_id
+        ).productName,
+        description: state.products.find(
+          (product) => product.product_id === product_id
+        ).productDescription,
+        price: state.products.find(
+          (product) => product.product_id === product_id
+        ).productPrice,
+        quantity,
+        documentation: state.products.find(
+          (product) => product.product_id === product_id
+        ).documentation,
+      },
+    };
+    await API.put(apiName, path, myInit);
+  };
+
+  const postOrder = async () => {
+    const token = await getAccessTokenSilently();
+    const apiName = "ordersApi";
+    const path = "/orders";
+    const productId = state.products.find(
+      (product) => product.productName === state.product
+    ).product_id;
+    const myInit = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      body: {
+        productId: productId,
         orderedBy: user.name,
         orderDate: new Date().toISOString().slice(0, 19).replace("T", " "),
         quantity: state.quantity,
@@ -75,6 +105,11 @@ export const CatalogAddComponent = () => {
 
     try {
       await API.post(apiName, path, myInit);
+      await updateProduct(
+        productId,
+        state.products.find((product) => product.productName === state.product)
+          .productQuantity - state.quantity
+      );
       setState((prevState) => {
         return {
           ...prevState,
