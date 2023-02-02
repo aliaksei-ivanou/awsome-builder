@@ -46,30 +46,34 @@ const NavBar = () => {
                   Home
                 </NavLink>
               </NavItem>
-              {isAuthenticated && (
-                <NavItem>
-                  <NavLink
-                    tag={RouterNavLink}
-                    to="/catalog"
-                    exact
-                    activeClassName="router-link-exact-active"
-                  >
-                    Catalog
-                  </NavLink>
-                </NavItem>
-              )}
-              {isAuthenticated && (
-                <NavItem>
-                  <NavLink
-                    tag={RouterNavLink}
-                    to="/orders"
-                    exact
-                    activeClassName="router-link-exact-active"
-                  >
-                    Orders
-                  </NavLink>
-                </NavItem>
-              )}
+              {isAuthenticated &&
+                (user.anycompany_roles.includes("Admin") ||
+                  user.anycompany_roles.includes("Wholesaler")) && (
+                  <NavItem>
+                    <NavLink
+                      tag={RouterNavLink}
+                      to="/catalog"
+                      exact
+                      activeClassName="router-link-exact-active"
+                    >
+                      Catalog
+                    </NavLink>
+                  </NavItem>
+                )}
+              {isAuthenticated &&
+                (user.anycompany_roles.includes("Admin") ||
+                  user.anycompany_roles.includes("Wholesaler")) && (
+                  <NavItem>
+                    <NavLink
+                      tag={RouterNavLink}
+                      to="/orders"
+                      exact
+                      activeClassName="router-link-exact-active"
+                    >
+                      Orders
+                    </NavLink>
+                  </NavItem>
+                )}
               {isAuthenticated && (
                 <NavItem>
                   <NavLink
