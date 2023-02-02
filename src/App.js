@@ -9,6 +9,7 @@ import history from "./utils/history";
 import Catalog from "./views/Catalog";
 import CatalogAdd from "./views/CatalogAdd";
 import CatalogEdit from "./views/CatalogEdit";
+import Documentation from "./views/Documentation";
 import Home from "./views/Home";
 import OrderAdd from "./views/OrderAdd";
 import Orders from "./views/Orders";
@@ -46,6 +47,7 @@ const App = () => {
             <Route path="/catalog/edit-product" component={CatalogEdit} />
             <Route path="/orders" exact component={Orders} />
             <Route path="/orders/add-order" exact component={OrderAdd} />
+            <Route path="/documentation" exact component={Documentation} />
           </Switch>
         </Container>
         <Footer />
