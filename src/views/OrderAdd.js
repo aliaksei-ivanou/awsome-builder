@@ -49,7 +49,7 @@ export const CatalogAddComponent = () => {
         quantity,
         documentation: state.products.find(
           (product) => product.product_id === product_id
-        ).documentation,
+        ).productDocumentation,
       },
     };
     await API.put(apiName, path, myInit);
