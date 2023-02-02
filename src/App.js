@@ -10,6 +10,7 @@ import Catalog from "./views/Catalog";
 import CatalogAdd from "./views/CatalogAdd";
 import CatalogEdit from "./views/CatalogEdit";
 import Home from "./views/Home";
+import OrderAdd from "./views/OrderAdd";
 import Orders from "./views/Orders";
 import Profile from "./views/Profile";
 
@@ -44,6 +45,7 @@ const App = () => {
             <Route path="/catalog/add-product" exact component={CatalogAdd} />
             <Route path="/catalog/edit-product" component={CatalogEdit} />
             <Route path="/orders" exact component={Orders} />
+            <Route path="/orders/add-order" exact component={OrderAdd} />
           </Switch>
         </Container>
         <Footer />
