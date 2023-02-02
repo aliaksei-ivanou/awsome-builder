@@ -19,11 +19,7 @@ export const CatalogAddComponent = () => {
     success: false,
     products: [],
     product: "",
-    orderedBy: "",
-    orderDate: "",
     quantity: "",
-    unitCost: "",
-    totalCost: "",
   });
 
   const { handleConsent, handleLoginAgain, handle } = useAuth0ConsentWrapper();
@@ -32,28 +28,30 @@ export const CatalogAddComponent = () => {
 
   const postOrder = async () => {
     const token = await getAccessTokenSilently();
-    const apiName = "itemsApi";
-    const path = "/items";
+    const apiName = "ordersApi";
+    const path = "/orders";
     const myInit = {
       headers: {
         Authorization: `Bearer ${token}`,
       },
       body: {
-        name: state.name,
-        description: state.description,
-        price: state.price,
+        productId: state.products.find(
+          (product) => product.productName === state.product
+        ).product_id,
+        orderedBy: user.name,
+        orderDate: new Date().toISOString().slice(0, 19).replace("T", " "),
         quantity: state.quantity,
-        documentation: state.documentation,
+        price: state.products.find(
+          (product) => product.productName === state.product
+        ).productPrice,
+        totalCost:
+          state.products.find(
+            (product) => product.productName === state.product
+          ).productPrice * state.quantity,
       },
     };
 
-    if (
-      !state.name ||
-      !state.description ||
-      !state.price ||
-      !state.documentation ||
-      !state.quantity
-    ) {
+    if (!state.product || !state.quantity) {
       setState((prevState) => {
         return {
           ...prevState,
