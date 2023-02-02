@@ -5,7 +5,6 @@ import { useHistory } from "react-router-dom";
 import { Alert, Button } from "reactstrap";
 import awsconfig from "../aws-exports";
 import Loading from "../components/Loading";
-import { authorized } from "../utils/authorization";
 import { timeout, useAuth0ConsentWrapper } from "../utils/misc";
 import { useGetPresignedUrlWrapper } from "../utils/s3";
 
@@ -13,7 +12,6 @@ Amplify.configure(awsconfig);
 
 export const CatalogAddComponent = () => {
   const [state, setState] = useState({
-    authorized: true,
     productUpdated: false,
     emptyFields: false,
     error: null,
@@ -43,21 +41,10 @@ export const CatalogAddComponent = () => {
       },
     };
     try {
-      if (!authorized(user.anycompany_roles, path, "GET")) {
-        setState((prevState) => {
-          return {
-            ...prevState,
-            authorized: false,
-          };
-        });
-        return;
-      }
-
       const response = await API.get(apiName, path, myInit);
       setState((prevState) => {
         return {
           ...prevState,
-          authorized: true,
           name: response.productName,
           description: response.productDescription,
           price: response.productPrice,
@@ -109,28 +96,16 @@ export const CatalogAddComponent = () => {
     };
 
     try {
-      if (authorized(user.anycompany_roles, path, "POST")) {
-        await API.put(apiName, path, myInit);
-        setState((prevState) => {
-          return {
-            ...prevState,
-            productUpdated: true,
-            authorized: true,
-            emptyFields: false,
-          };
-        });
-        // wait 2 seconds and redirect to catalog
-        await timeout(2000);
-        history.push("/catalog");
-      } else {
-        setState((prevState) => {
-          return {
-            ...prevState,
-            productUpdated: false,
-            authorized: false,
-          };
-        });
-      }
+      await API.put(apiName, path, myInit);
+      setState((prevState) => {
+        return {
+          ...prevState,
+          productUpdated: true,
+          emptyFields: false,
+        };
+      });
+      await timeout(2000);
+      history.push("/catalog");
     } catch (error) {
       console.log(error);
       setState((prevState) => {
@@ -144,7 +119,9 @@ export const CatalogAddComponent = () => {
   };
 
   useEffect(() => {
-    getProduct();
+    if (user.anycompany_roles.includes("Admin")) {
+      getProduct();
+    }
   }, []);
 
   return (
@@ -166,7 +143,7 @@ export const CatalogAddComponent = () => {
             </a>
           </Alert>
         )}
-        {!state.authorized && (
+        {!user.anycompany_roles.includes("Admin") && (
           <Alert color="warning">
             You need to log in as an admin to access this resource
           </Alert>
@@ -188,105 +165,111 @@ export const CatalogAddComponent = () => {
       </div>
 
       <div className="item-input-container">
-        <div className="item-input">
-          <label className="item-description">Product Name</label>
-          <br />
-          <input
-            type="text"
-            id="item-name"
-            name="item-name"
-            className="text-input"
-            value={state.name}
-            onChange={(e) =>
-              setState((prevState) => {
-                return {
-                  ...prevState,
-                  name: e.target.value,
-                };
-              })
-            }
-          />
-        </div>
-        <div className="item-input">
-          <label className="item-description">Product Description</label>
-          <br />
-          <textarea
-            id="item-description"
-            name="item-description"
-            className="text-input"
-            value={state.description}
-            onChange={(e) =>
-              setState((prevState) => {
-                return {
-                  ...prevState,
-                  description: e.target.value,
-                };
-              })
-            }
-          />
-        </div>
-        <div className="item-input">
-          <label className="item-description">Product Price</label>
-          <br />
-          <input
-            type="number"
-            id="item-price"
-            name="item-price"
-            className="text-input"
-            value={state.price}
-            onChange={(e) => setState({ ...state, price: e.target.value })}
-          />
-        </div>
-        <div className="item-input">
-          <label className="item-description">Product Quantity</label>
-          <br />
-          <input
-            type="number"
-            id="item-quantity"
-            name="item-quantity"
-            className="text-input"
-            value={state.quantity}
-            onChange={(e) => setState({ ...state, quantity: e.target.value })}
-          />
-        </div>
-        <div className="item-input">
-          <label className="item-description">Product Documentation</label>
-          <br />
-          <input
-            type="file"
-            id="item-documentation"
-            name="item-documentation"
-            onChange={async (e) => {
-              const result = await handleUploadDocument(e.target.files[0]);
-              setState((prevState) => {
-                return {
-                  ...prevState,
-                  documentation: result.documentation,
-                  success: result.success,
-                  error: result.error,
-                };
-              });
-            }}
-          />
-          <br />
-          <label>
-            <a
-              href="#/"
-              onClick={(e) => handleGetDocument(state.documentation)}
-            >
-              {state.documentation}
-            </a>
-          </label>
-        </div>
-        <div className="item-input">
-          <Button
-            color="primary"
-            className="btn-margin"
-            onClick={updateProduct}
-          >
-            Update Product
-          </Button>
-        </div>
+        {user.anycompany_roles.includes("Admin") && (
+          <>
+            <div className="item-input">
+              <label className="item-description">Product Name</label>
+              <br />
+              <input
+                type="text"
+                id="item-name"
+                name="item-name"
+                className="text-input"
+                value={state.name}
+                onChange={(e) =>
+                  setState((prevState) => {
+                    return {
+                      ...prevState,
+                      name: e.target.value,
+                    };
+                  })
+                }
+              />
+            </div>
+            <div className="item-input">
+              <label className="item-description">Product Description</label>
+              <br />
+              <textarea
+                id="item-description"
+                name="item-description"
+                className="text-input"
+                value={state.description}
+                onChange={(e) =>
+                  setState((prevState) => {
+                    return {
+                      ...prevState,
+                      description: e.target.value,
+                    };
+                  })
+                }
+              />
+            </div>
+            <div className="item-input">
+              <label className="item-description">Product Price</label>
+              <br />
+              <input
+                type="number"
+                id="item-price"
+                name="item-price"
+                className="text-input"
+                value={state.price}
+                onChange={(e) => setState({ ...state, price: e.target.value })}
+              />
+            </div>
+            <div className="item-input">
+              <label className="item-description">Product Quantity</label>
+              <br />
+              <input
+                type="number"
+                id="item-quantity"
+                name="item-quantity"
+                className="text-input"
+                value={state.quantity}
+                onChange={(e) =>
+                  setState({ ...state, quantity: e.target.value })
+                }
+              />
+            </div>
+            <div className="item-input">
+              <label className="item-description">Product Documentation</label>
+              <br />
+              <input
+                type="file"
+                id="item-documentation"
+                name="item-documentation"
+                onChange={async (e) => {
+                  const result = await handleUploadDocument(e.target.files[0]);
+                  setState((prevState) => {
+                    return {
+                      ...prevState,
+                      documentation: result.documentation,
+                      success: result.success,
+                      error: result.error,
+                    };
+                  });
+                }}
+              />
+              <br />
+              <label>
+                <a
+                  href="#/"
+                  onClick={(e) => handleGetDocument(state.documentation)}
+                >
+                  {state.documentation}
+                </a>
+              </label>
+            </div>
+            <div className="item-input">
+              <Button
+                color="primary"
+                className="btn-margin"
+                onClick={updateProduct}
+              >
+                Update Product
+              </Button>
+            </div>
+          </>
+        )}
       </div>
     </>
   );

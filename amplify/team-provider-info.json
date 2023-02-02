@@ -19,7 +19,7 @@
         },
         "customAuthorizer": {
           "deploymentBucketName": "amplify-awsomebuilder-dev-125918-deployment",
-          "s3Key": "amplify-builds/customAuthorizer-496177444f6a6d752f68-build.zip",
+          "s3Key": "amplify-builds/customAuthorizer-4d556c47457373363251-build.zip",
           "tokenIssuer": "https://dev-56pajuydgx8hdw3g.us.auth0.com/",
           "jwksUri": "https://dev-56pajuydgx8hdw3g.us.auth0.com/.well-known/jwks.json",
           "audience": "https://g6i5cr5cjd.execute-api.us-east-2.amazonaws.com/dev"

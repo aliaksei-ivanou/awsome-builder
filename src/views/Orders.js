@@ -6,14 +6,12 @@ import { Alert, Button } from "reactstrap";
 import awsconfig from "../aws-exports";
 import Loading from "../components/Loading";
 import { useApiWrapper } from "../utils/api";
-import { authorized } from "../utils/authorization";
 import { useAuth0ConsentWrapper } from "../utils/misc";
 
 Amplify.configure(awsconfig);
 
 export const OrdersComponent = () => {
   const [state, setState] = useState({
-    authorized: true,
     showResult: false,
     products: "",
     orders: "",
@@ -69,18 +67,14 @@ export const OrdersComponent = () => {
     };
 
     try {
-      if (authorized(user.anycompany_roles, path, "DELETE")) {
-        await API.del(apiName, path, myInit);
-        await updateProduct(product_id, quantity);
-        await getOrders(user.anycompany_roles);
-      } else {
-        setState((prevState) => {
-          return {
-            ...prevState,
-            authorized: false,
-          };
-        });
-      }
+      await API.del(apiName, path, myInit);
+      await updateProduct(product_id, quantity);
+      setState((prevState) => {
+        return {
+          ...prevState,
+          refresh: true,
+        };
+      });
     } catch (error) {
       setState((prevState) => {
         return {
@@ -92,21 +86,26 @@ export const OrdersComponent = () => {
   };
 
   useEffect(() => {
-    if (state.refresh) {
-      const fetchData = async () => {
-        const products = await getItems(user.anycompany_roles);
-        const orders = await getOrders(user.anycompany_roles);
-        setState((prevState) => {
-          return {
-            ...prevState,
-            products: products.data,
-            orders: orders.data,
-            showResult: products.showResult && orders.showResult,
-            authorized: products.authorized && orders.authorized,
-          };
-        });
-      };
-      fetchData();
+    if (
+      user.anycompany_roles.includes("Admin") ||
+      user.anycompany_roles.includes("Wholesaler")
+    ) {
+      if (state.refresh) {
+        const fetchData = async () => {
+          const products = await getItems(user.anycompany_roles);
+          const orders = await getOrders(user.anycompany_roles);
+          setState((prevState) => {
+            return {
+              ...prevState,
+              products: products.data,
+              orders: orders.data,
+              showResult: products.showResult && orders.showResult,
+              refresh: false,
+            };
+          });
+        };
+        fetchData();
+      }
     }
   }, [state.refresh, user.anycompany_roles, getItems, getOrders]);
 
@@ -129,7 +128,10 @@ export const OrdersComponent = () => {
             </a>
           </Alert>
         )}
-        {!state.authorized && (
+        {!(
+          user.anycompany_roles.includes("Admin") ||
+          user.anycompany_roles.includes("Wholesaler")
+        ) && (
           <Alert color="warning">
             You need to log in as an admin or wholesaler to access this resource
           </Alert>

@@ -13,7 +13,6 @@ Amplify.configure(awsconfig);
 
 export const CatalogComponent = () => {
   const [state, setState] = useState({
-    authorized: true,
     showResult: false,
     products: "",
     error: null,
@@ -47,23 +46,27 @@ export const CatalogComponent = () => {
   };
 
   useEffect(() => {
-    if (state.refresh) {
-      const fetchData = async () => {
-        const { data, showResult, authorized, error } = await getItems(
-          user.anycompany_roles
-        );
-        setState((prevState) => {
-          return {
-            ...prevState,
-            products: data,
-            showResult,
-            authorized,
-            error,
-            refresh: false,
-          };
-        });
-      };
-      fetchData();
+    if (
+      user.anycompany_roles.includes("Admin") ||
+      user.anycompany_roles.includes("Wholesaler")
+    ) {
+      if (state.refresh) {
+        const fetchData = async () => {
+          const { data, showResult, error } = await getItems(
+            user.anycompany_roles
+          );
+          setState((prevState) => {
+            return {
+              ...prevState,
+              products: data,
+              showResult,
+              error,
+              refresh: false,
+            };
+          });
+        };
+        fetchData();
+      }
     }
   }, [state.refresh, user.anycompany_roles, getItems]);
 
@@ -86,7 +89,10 @@ export const CatalogComponent = () => {
             </a>
           </Alert>
         )}
-        {!state.authorized && (
+        {!(
+          user.anycompany_roles.includes("Admin") ||
+          user.anycompany_roles.includes("Wholesaler")
+        ) && (
           <Alert color="warning">
             You need to log in as an admin to access this resource
           </Alert>
@@ -98,13 +104,15 @@ export const CatalogComponent = () => {
       <div className="result-block-container">
         {state.showResult && (
           <div>
-            <Button
-              color="primary"
-              onClick={() => history.push("/catalog/add-product")}
-              style={{ float: "right" }}
-            >
-              Add Product
-            </Button>
+            {user.anycompany_roles.includes("Admin") && (
+              <Button
+                color="primary"
+                onClick={() => history.push("/catalog/add-product")}
+                style={{ float: "right" }}
+              >
+                Add Product
+              </Button>
+            )}
             <table className="table table-striped">
               <thead>
                 <tr>
@@ -113,7 +121,9 @@ export const CatalogComponent = () => {
                   <th scope="col">Product Price</th>
                   <th scope="col">Product Quantity</th>
                   <th scope="col">Product Documentation</th>
-                  <th scope="col">Actions</th>
+                  {user.anycompany_roles.includes("Admin") && (
+                    <th scope="col">Actions</th>
+                  )}
                 </tr>
               </thead>
               <tbody>
@@ -135,24 +145,26 @@ export const CatalogComponent = () => {
                         {item.productDocumentation}
                       </a>
                     </td>
-                    <td>
-                      <Button
-                        color="primary"
-                        onClick={() =>
-                          history.push(
-                            `/catalog/edit-product/${item.product_id}`
-                          )
-                        }
-                      >
-                        Edit
-                      </Button>
-                      <Button
-                        color="danger"
-                        onClick={() => handleDelete(item.product_id)}
-                      >
-                        Delete
-                      </Button>
-                    </td>
+                    {user.anycompany_roles.includes("Admin") && (
+                      <td>
+                        <Button
+                          color="primary"
+                          onClick={() =>
+                            history.push(
+                              `/catalog/edit-product/${item.product_id}`
+                            )
+                          }
+                        >
+                          Edit
+                        </Button>
+                        <Button
+                          color="danger"
+                          onClick={() => handleDelete(item.product_id)}
+                        >
+                          Delete
+                        </Button>
+                      </td>
+                    )}
                   </tr>
                 ))}
               </tbody>
