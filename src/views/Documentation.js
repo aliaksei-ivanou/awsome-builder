@@ -12,7 +12,6 @@ Amplify.configure(awsconfig);
 
 export const CatalogComponent = () => {
   const [state, setState] = useState({
-    authorized: true,
     showResult: false,
     products: "",
     error: null,
@@ -27,14 +26,12 @@ export const CatalogComponent = () => {
   useEffect(() => {
     if (state.refresh) {
       const fetchData = async () => {
-        const { data, showResult, authorized, error } =
-          await getDocumentation();
+        const { data, showResult, error } = await getDocumentation();
         setState((prevState) => {
           return {
             ...prevState,
             products: data,
             showResult,
-            authorized,
             error,
             refresh: false,
           };
