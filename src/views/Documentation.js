@@ -21,15 +21,14 @@ export const CatalogComponent = () => {
 
   const { handleConsent, handleLoginAgain, handle } = useAuth0ConsentWrapper();
   const { handleGetDocument } = useGetPresignedUrlWrapper();
-  const { getItems } = useApiWrapper();
+  const { getDocumentation } = useApiWrapper();
   const { user } = useAuth0();
 
   useEffect(() => {
     if (state.refresh) {
       const fetchData = async () => {
-        const { data, showResult, authorized, error } = await getItems(
-          user.anycompany_roles
-        );
+        const { data, showResult, authorized, error } =
+          await getDocumentation();
         setState((prevState) => {
           return {
             ...prevState,
@@ -43,7 +42,7 @@ export const CatalogComponent = () => {
       };
       fetchData();
     }
-  }, [state.refresh, user.anycompany_roles, getItems]);
+  }, [state.refresh, user.anycompany_roles, getDocumentation]);
 
   return (
     <>

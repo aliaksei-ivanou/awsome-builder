@@ -44,6 +44,9 @@ export const useApiWrapper = () => {
 
   const getOrders = async (roles) => getData(roles, "ordersApi", "/orders");
 
+  const getDocumentation = async (roles) =>
+    getData(["Admin"], "documentsApi", "/documents");
+
   const deleteData = async (id, apiName, path) => {
     try {
       const token = await getAccessTokenSilently();
@@ -56,5 +59,5 @@ export const useApiWrapper = () => {
     }
   };
 
-  return { getItems, getOrders, deleteData };
+  return { getItems, getOrders, getDocumentation, deleteData };
 };
