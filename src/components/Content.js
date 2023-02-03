@@ -7,10 +7,10 @@ class Content extends Component {
   render() {
     return (
       <div>
-        <h2 className="my-5 text-center">Description</h2>
+        <h2 className="my-5 text-center">Roles assumption</h2>
         <Row className="d-flex justify-content-between">
           {contentData.map((col, i) => (
-            <Col key={i} md={5} className="mb-4">
+            <Col key={i} md={4} className="mb-4">
               <h6 className="mb-3">
                 <FontAwesomeIcon className="mr-2" />
                 {col.title}
