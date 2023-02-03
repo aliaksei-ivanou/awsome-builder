@@ -10,6 +10,8 @@ The application is deployed to AWS using AWS Amplify Console. The frontend is de
 
 When a user authenticates with Auth0, Auth0 issues identity and access tokens containing a custom claim describing the user's roles. The access token is used by the API Gateway Lambda authorizers to authorize API calls to the backend. The identity token is used by the frontend to customize the application's UI based on the user's roles.
 
+S3 pre-signed URLs are used to upload and receive PDF documents from the backend.
+
 ## Available Scripts
 
 In the project directory, you can run:
