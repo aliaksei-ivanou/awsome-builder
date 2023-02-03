@@ -165,13 +165,7 @@ export const OrdersComponent = () => {
               <tbody>
                 {state.orders.map((item) => (
                   <tr key={item.order_id}>
-                    <td>
-                      {
-                        state.products.find(
-                          (product) => product.product_id === item.product_id
-                        ).productName
-                      }
-                    </td>
+                    <td>{item.productName}</td>
                     <td>{item.orderedBy}</td>
                     <td>{item.orderDate}</td>
                     <td>{item.quantity}</td>

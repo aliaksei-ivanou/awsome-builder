@@ -67,6 +67,7 @@ export const CatalogAddComponent = () => {
       },
       body: {
         productId: productId,
+        productName: state.product,
         orderedBy: user.name,
         orderDate: new Date().toISOString().slice(0, 19).replace("T", " "),
         quantity: state.quantity,

@@ -213,6 +213,7 @@ app.post(path, function (req, res) {
     Item: {
       order_id: uuidv4(),
       product_id: req.body.productId,
+      productName: req.body.productName,
       orderDate: req.body.orderDate,
       orderedBy: req.body.orderedBy,
       quantity: req.body.quantity,
