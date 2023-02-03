@@ -1,15 +1,13 @@
 const contentData = [
   {
-    title: "Configure other identity providers",
-    link: "https://auth0.com/docs/connections",
+    title: "Roles assumption",
     description:
-      "Auth0 supports social providers as Facebook, Twitter, Instagram and 100+, Enterprise providers as Microsoft Office 365, Google Apps, Azure, and more. You can also use any OAuth2 Authorization Server.",
+      "Administrators manage the products catalog, orders, and have access to products documentation. Wholesalers manage orders, have access to products documentation. Contractors work in the field and need to access the product documentation",
   },
   {
-    title: "Enable Multifactor Authentication",
-    link: "https://auth0.com/docs/multifactor-authentication",
+    title: "Authentication and authorization",
     description:
-      "Add an extra layer of security by enabling Multi-factor Authentication, requiring your users to provide more than one piece of identifying information. Push notifications, authenticator apps, SMS, and DUO Security are supported.",
+      "Auth0 is used as an identity provider. It returns user's roles as part of the JWT token.",
   },
   {
     title: "Anomaly Detection",

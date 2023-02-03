@@ -7,7 +7,7 @@ Amplify.configure(awsconfig);
 export const useApiWrapper = () => {
   const { getAccessTokenSilently } = useAuth0();
 
-  const getData = async (roles, apiName, path) => {
+  const getData = async (apiName, path) => {
     const token = await getAccessTokenSilently();
     const state = {
       showResult: false,
@@ -33,12 +33,11 @@ export const useApiWrapper = () => {
     return state;
   };
 
-  const getItems = async (roles) => getData(roles, "itemsApi", "/items");
+  const getItems = async () => getData("itemsApi", "/items");
 
-  const getOrders = async (roles) => getData(roles, "ordersApi", "/orders");
+  const getOrders = async () => getData("ordersApi", "/orders");
 
-  const getDocumentation = async (roles) =>
-    getData(["Admin"], "documentsApi", "/documents");
+  const getDocumentation = async () => getData("documentsApi", "/documents");
 
   const deleteData = async (id, apiName, path) => {
     try {
