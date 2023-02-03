@@ -68,13 +68,13 @@ export const OrdersComponent = () => {
 
     try {
       await API.del(apiName, path, myInit);
-      await updateProduct(product_id, quantity);
       setState((prevState) => {
         return {
           ...prevState,
           refresh: true,
         };
       });
+      await updateProduct(product_id, quantity);
     } catch (error) {
       setState((prevState) => {
         return {
