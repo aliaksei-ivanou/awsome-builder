@@ -2,7 +2,11 @@
 
 This project is a sample application that demonstrates AWS capabilities. It is a simple application that allows a user to order widgets from a wholesale supplier.
 
+<https://d30bbnfu0x2i3e.cloudfront.net/>
+
 ## Architecture
+
+![Architecture diagram](Architecture.png)
 
 The application is built using React and AWS Amplify. The identity provider is Auth0.
 
