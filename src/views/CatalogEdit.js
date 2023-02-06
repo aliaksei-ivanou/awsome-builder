@@ -1,14 +1,11 @@
 import { useAuth0, withAuthenticationRequired } from "@auth0/auth0-react";
-import { Amplify, API } from "aws-amplify";
+import { API } from "aws-amplify";
 import React, { useEffect, useState } from "react";
-import { useHistory } from "react-router-dom";
 import { Alert, Button } from "reactstrap";
-import awsconfig from "../aws-exports";
 import Loading from "../components/Loading";
 import { timeout, useAuth0ConsentWrapper } from "../utils/misc";
 import { useGetPresignedUrlWrapper } from "../utils/s3";
-
-Amplify.configure(awsconfig);
+import history from "../utils/history";
 
 export const CatalogAddComponent = () => {
   const [state, setState] = useState({
@@ -27,8 +24,6 @@ export const CatalogAddComponent = () => {
   const { getAccessTokenSilently, user } = useAuth0();
   const { handleGetDocument, handleUploadDocument } =
     useGetPresignedUrlWrapper();
-
-  const history = useHistory();
 
   const getProduct = async () => {
     const id = window.location.pathname.split("/").pop();

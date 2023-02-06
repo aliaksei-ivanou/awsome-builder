@@ -1,9 +1,6 @@
 import { useAuth0 } from "@auth0/auth0-react";
-import { Amplify, API } from "aws-amplify";
+import { API } from "aws-amplify";
 import axios from "axios";
-import awsconfig from "../aws-exports";
-
-Amplify.configure(awsconfig);
 
 export const useGetPresignedUrlWrapper = () => {
   const { getAccessTokenSilently } = useAuth0();

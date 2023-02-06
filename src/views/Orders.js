@@ -1,14 +1,11 @@
 import { useAuth0, withAuthenticationRequired } from "@auth0/auth0-react";
-import { Amplify, API } from "aws-amplify";
+import { API } from "aws-amplify";
 import React, { useEffect, useState } from "react";
-import { useHistory } from "react-router-dom";
 import { Alert, Button } from "reactstrap";
-import awsconfig from "../aws-exports";
 import Loading from "../components/Loading";
 import { useApiWrapper } from "../utils/api";
+import history from "../utils/history";
 import { useAuth0ConsentWrapper } from "../utils/misc";
-
-Amplify.configure(awsconfig);
 
 export const OrdersComponent = () => {
   const [state, setState] = useState({
@@ -22,8 +19,6 @@ export const OrdersComponent = () => {
   const { handleConsent, handleLoginAgain, handle } = useAuth0ConsentWrapper();
   const { getItems, getOrders } = useApiWrapper();
   const { getAccessTokenSilently, user } = useAuth0();
-
-  const history = useHistory();
 
   const updateProduct = async (product_id, quantity) => {
     const token = await getAccessTokenSilently();

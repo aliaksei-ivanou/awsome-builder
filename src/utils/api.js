@@ -1,8 +1,5 @@
 import { useAuth0 } from "@auth0/auth0-react";
-import { Amplify, API } from "aws-amplify";
-import awsconfig from "../aws-exports";
-
-Amplify.configure(awsconfig);
+import { API } from "aws-amplify";
 
 export const useApiWrapper = () => {
   const { getAccessTokenSilently } = useAuth0();

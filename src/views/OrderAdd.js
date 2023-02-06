@@ -1,13 +1,10 @@
 import { useAuth0, withAuthenticationRequired } from "@auth0/auth0-react";
-import { Amplify, API } from "aws-amplify";
+import { API } from "aws-amplify";
 import React, { useEffect, useState } from "react";
 import { Alert, Button } from "reactstrap";
-import awsconfig from "../aws-exports";
 import Loading from "../components/Loading";
 import { useApiWrapper } from "../utils/api";
 import { useAuth0ConsentWrapper } from "../utils/misc";
-
-Amplify.configure(awsconfig);
 
 export const CatalogAddComponent = () => {
   const [state, setState] = useState({
