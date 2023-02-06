@@ -15,7 +15,7 @@ export const CatalogComponent = () => {
   });
 
   const { handleConsent, handleLoginAgain, handle } = useAuth0ConsentWrapper();
-  const { getItems, deleteData } = useApiWrapper();
+  const { getItems, deleteData, getCookies } = useApiWrapper();
   const { user } = useAuth0();
 
   const handleDelete = async (id) => {
@@ -44,6 +44,7 @@ export const CatalogComponent = () => {
     ) {
       if (state.refresh) {
         const fetchData = async () => {
+          await getCookies();
           const { data, showResult, error } = await getItems(
             user.anycompany_roles
           );

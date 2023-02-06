@@ -1,6 +1,6 @@
 const aws = require("aws-sdk");
 
-const SIGNING_URL = "https://d30bbnfu0x2i3e.cloudfront.net";
+const SIGNING_URL = "d30bbnfu0x2i3e.cloudfront.net";
 
 const cache = {};
 
@@ -21,14 +21,7 @@ const loadKeys = async () => {
 
 function getExpirationTime() {
   const date = new Date();
-  return new Date(
-    date.getFullYear(),
-    date.getMonth(),
-    date.getDate(),
-    date.getHours + 1,
-    date.getMinutes(),
-    date.getSeconds()
-  );
+  return new Date(date.getFullYear(), date.getMonth() + 1, 0, 23, 59, 59);
 }
 
 function getExpiryTime() {
@@ -70,22 +63,25 @@ exports.handler = async (event) => {
   return {
     statusCode: 200,
     headers: {
-      "Access-Control-Allow-Origin": "*",
-      "Access-Control-Allow-Headers": "*",
-      "Access-Control-Allow-Methods": "DELETE, POST, GET, OPTIONS",
+      "Access-Control-Allow-Origin": "https://d30bbnfu0x2i3e.cloudfront.net",
+      "Access-Control-Allow-Credentials": "true",
+      "Access-Control-Allow-Methods":
+        "DELETE, GET, HEAD, OPTIONS, PATCH, POST, PUT",
+      "Access-Control-Allow-Headers":
+        "Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,Set-Cookie",
       "Cache-Control": "no-cache, no-store, must-revalidate",
     },
     multiValueHeaders: {
       "Set-Cookie": [
         `CloudFront-Policy=${
           signedCookie["CloudFront-Policy"]
-        };Domain=${SIGNING_URL};Path=/;Expires=${getExpirationTime().toUTCString()};Secure;HttpOnly;SameSite=Lax`,
+        };Path=/;Expires=${getExpirationTime().toUTCString()};Secure;HttpOnly;SameSite=None`,
         `CloudFront-Key-Pair-Id=${
           signedCookie["CloudFront-Key-Pair-Id"]
-        };Domain=${SIGNING_URL};Path=/;Expires=${getExpirationTime().toUTCString()};Secure;HttpOnly;SameSite=Lax`,
+        };Path=/;Expires=${getExpirationTime().toUTCString()};Secure;HttpOnly;SameSite=None`,
         `CloudFront-Signature=${
           signedCookie["CloudFront-Signature"]
-        };Domain=${SIGNING_URL};Path=/;Expires=${getExpirationTime().toUTCString()};Secure;HttpOnly;SameSite=Lax`,
+        };Path=/;Expires=${getExpirationTime().toUTCString()};Secure;HttpOnly;SameSite=None`,
       ],
     },
   };

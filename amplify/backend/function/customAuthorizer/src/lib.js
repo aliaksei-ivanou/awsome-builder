@@ -21,13 +21,15 @@ const getPolicyDocument = (resource) => {
 const policies = {
   admin: getPolicyDocument("*"),
   contractor: getPolicyDocument(
-    "arn:aws:execute-api:us-east-2:247045843940:oxu60s1t8e/*/GET/documents"
+    "arn:aws:execute-api:us-east-2:247045843940:oxu60s1t8e/*/GET/documents",
+    "arn:aws:execute-api:us-east-2:247045843940:cp846i39k1/*/GET/signed-cookie"
   ),
   wholesaler: getPolicyDocument([
     "arn:aws:execute-api:us-east-2:247045843940:oxu60s1t8e/*/GET/documents",
     "arn:aws:execute-api:us-east-2:247045843940:njqtnc7528/*/*/orders*",
     "arn:aws:execute-api:us-east-2:247045843940:g6i5cr5cjd/*/GET/items",
     "arn:aws:execute-api:us-east-2:247045843940:g6i5cr5cjd/*/PUT/items",
+    "arn:aws:execute-api:us-east-2:247045843940:cp846i39k1/*/GET/signed-cookie",
   ]),
   default: getPolicyDocument(""),
 };

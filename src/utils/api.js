@@ -48,5 +48,20 @@ export const useApiWrapper = () => {
     }
   };
 
-  return { getItems, getOrders, getDocumentation, deleteData };
+  const getCookies = async () => {
+    const token = await getAccessTokenSilently();
+    const headers = {
+      Authorization: `Bearer ${token}`,
+    };
+    try {
+      await API.get("signedCookieApi", "/signed-cookie", {
+        headers,
+        withCredentials: true,
+      });
+    } catch (error) {
+      console.log(error.error);
+    }
+  };
+
+  return { getItems, getOrders, getDocumentation, deleteData, getCookies };
 };
