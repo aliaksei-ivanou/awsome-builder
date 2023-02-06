@@ -27,11 +27,6 @@ export const useGetPresignedUrlWrapper = () => {
     }
   };
 
-  const handleGetDocument = async (filename) => {
-    const url = await getPresignedUrl(filename, "getObject");
-    window.open(url);
-  };
-
   const handleUploadDocument = async (file) => {
     try {
       const signedRequest = await getPresignedUrl(file.name, "putObject");
@@ -52,5 +47,5 @@ export const useGetPresignedUrlWrapper = () => {
     }
   };
 
-  return { handleGetDocument, handleUploadDocument };
+  return { handleUploadDocument };
 };

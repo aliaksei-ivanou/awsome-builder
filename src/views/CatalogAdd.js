@@ -20,8 +20,7 @@ export const CatalogAddComponent = () => {
 
   const { handleConsent, handleLoginAgain, handle } = useAuth0ConsentWrapper();
   const { getAccessTokenSilently, user } = useAuth0();
-  const { handleGetDocument, handleUploadDocument } =
-    useGetPresignedUrlWrapper();
+  const { handleUploadDocument } = useGetPresignedUrlWrapper();
 
   const postProduct = async () => {
     const token = await getAccessTokenSilently();
@@ -202,10 +201,7 @@ export const CatalogAddComponent = () => {
               {state.success && (
                 <Alert color="success">
                   The file is successfully uploaded:{" "}
-                  <a
-                    href="#/"
-                    onClick={(e) => handleGetDocument(state.documentation)}
-                  >
+                  <a href={`/files/${state.documentation}`}>
                     {state.documentation}
                   </a>
                 </Alert>

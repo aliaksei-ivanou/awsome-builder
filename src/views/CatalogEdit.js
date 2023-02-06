@@ -3,17 +3,15 @@ import { API } from "aws-amplify";
 import React, { useEffect, useState } from "react";
 import { Alert, Button } from "reactstrap";
 import Loading from "../components/Loading";
+import history from "../utils/history";
 import { timeout, useAuth0ConsentWrapper } from "../utils/misc";
 import { useGetPresignedUrlWrapper } from "../utils/s3";
-import history from "../utils/history";
 
 export const CatalogAddComponent = () => {
   const [state, setState] = useState({
     productUpdated: false,
     emptyFields: false,
     error: null,
-    success: false,
-    url: "",
     name: "",
     description: "",
     price: "",
@@ -22,8 +20,7 @@ export const CatalogAddComponent = () => {
 
   const { handleConsent, handleLoginAgain, handle } = useAuth0ConsentWrapper();
   const { getAccessTokenSilently, user } = useAuth0();
-  const { handleGetDocument, handleUploadDocument } =
-    useGetPresignedUrlWrapper();
+  const { handleUploadDocument } = useGetPresignedUrlWrapper();
 
   const getProduct = async () => {
     const id = window.location.pathname.split("/").pop();
@@ -149,12 +146,6 @@ export const CatalogAddComponent = () => {
         {state.productUpdated && (
           <Alert color="success">The product is successfully updated</Alert>
         )}
-        {state.success && (
-          <Alert color="success">
-            The file is successfully uploaded. It can be accessed{" "}
-            <a href={state.url}>here</a>
-          </Alert>
-        )}
         <h1>Widgets Catalog</h1>
         <p className="lead">Edit the Product</p>
       </div>
@@ -238,7 +229,6 @@ export const CatalogAddComponent = () => {
                     return {
                       ...prevState,
                       documentation: result.documentation,
-                      success: result.success,
                       error: result.error,
                     };
                   });
@@ -246,10 +236,7 @@ export const CatalogAddComponent = () => {
               />
               <br />
               <label>
-                <a
-                  href="#/"
-                  onClick={(e) => handleGetDocument(state.documentation)}
-                >
+                <a href={`/files/${state.documentation}`}>
                   {state.documentation}
                 </a>
               </label>

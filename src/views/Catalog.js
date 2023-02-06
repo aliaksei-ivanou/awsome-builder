@@ -5,7 +5,6 @@ import Loading from "../components/Loading";
 import { useApiWrapper } from "../utils/api";
 import history from "../utils/history";
 import { useAuth0ConsentWrapper } from "../utils/misc";
-import { useGetPresignedUrlWrapper } from "../utils/s3";
 
 export const CatalogComponent = () => {
   const [state, setState] = useState({
@@ -16,7 +15,6 @@ export const CatalogComponent = () => {
   });
 
   const { handleConsent, handleLoginAgain, handle } = useAuth0ConsentWrapper();
-  const { handleGetDocument } = useGetPresignedUrlWrapper();
   const { getItems, deleteData } = useApiWrapper();
   const { user } = useAuth0();
 
@@ -128,14 +126,7 @@ export const CatalogComponent = () => {
                     <td>{item.productPrice}</td>
                     <td>{item.productQuantity}</td>
                     <td>
-                      <a
-                        href="#/"
-                        onClick={(e) =>
-                          handle(e, () =>
-                            handleGetDocument(item.productDocumentation)
-                          )
-                        }
-                      >
+                      <a href={`/files/${item.productDocumentation}`}>
                         {item.productDocumentation}
                       </a>
                     </td>
