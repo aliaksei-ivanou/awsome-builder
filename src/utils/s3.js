@@ -5,7 +5,7 @@ import axios from "axios";
 export const useGetPresignedUrlWrapper = () => {
   const { getAccessTokenSilently } = useAuth0();
 
-  const getPresignedUrl = async (fileName, action) => {
+  const getPresignedUrl = async (fileName) => {
     const token = await getAccessTokenSilently();
     const apiName = "itemsApi";
     const path = "/items/sign-s3";
@@ -14,7 +14,6 @@ export const useGetPresignedUrlWrapper = () => {
     };
     const body = {
       fileName,
-      action,
     };
 
     try {
@@ -29,7 +28,7 @@ export const useGetPresignedUrlWrapper = () => {
 
   const handleUploadDocument = async (file) => {
     try {
-      const signedRequest = await getPresignedUrl(file.name, "putObject");
+      const signedRequest = await getPresignedUrl(file.name);
       const options = { headers: { "Content-Type": file.type } };
       await axios.put(signedRequest, file, options);
       return {
