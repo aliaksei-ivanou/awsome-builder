@@ -41,6 +41,20 @@
       ],
       "providerPlugin": "awscloudformation",
       "service": "API Gateway"
+    },
+    "signedCookieApi": {
+      "dependsOn": [
+        {
+          "attributes": [
+            "Name",
+            "Arn"
+          ],
+          "category": "function",
+          "resourceName": "signedCookieFunction"
+        }
+      ],
+      "providerPlugin": "awscloudformation",
+      "service": "API Gateway"
     }
   },
   "auth": {},
@@ -114,6 +128,12 @@
           "resourceName": "itemsTable"
         }
       ],
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda"
+    },
+    "signedCookieFunction": {
+      "build": true,
+      "dependsOn": [],
       "providerPlugin": "awscloudformation",
       "service": "Lambda"
     }
@@ -210,6 +230,30 @@
         {
           "category": "function",
           "resourceName": "ordersLambda"
+        }
+      ]
+    },
+    "AMPLIFY_function_signedCookieFunction_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "signedCookieFunction"
+        }
+      ]
+    },
+    "AMPLIFY_function_signedCookieFunction_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "signedCookieFunction"
+        }
+      ]
+    },
+    "AMPLIFY_function_signedCookieFunction_secretsPathAmplifyAppId": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "signedCookieFunction"
         }
       ]
     }
