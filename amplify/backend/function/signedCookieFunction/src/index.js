@@ -52,7 +52,12 @@ function getSignedCookie(publicKey, privateKey) {
   return cloudFront.getSignedCookie(options);
 }
 
+/**
+ * @type {import('@types/aws-lambda').APIGatewayProxyHandler}
+ */
 exports.handler = async (event) => {
+  console.log(`EVENT: ${JSON.stringify(event)}`);
+
   if (cache.publicKey == null || cache.privateKey == null) {
     await loadKeys();
   }
@@ -63,40 +68,24 @@ exports.handler = async (event) => {
   );
 
   return {
-    status: "200",
-    statusDescription: "OK",
+    statusCode: 200,
     headers: {
-      location: [
-        {
-          key: "Location",
-          value: `https://${SIGNING_URL}/restricted-content.html`,
-        },
-      ],
-      "cache-control": [
-        {
-          key: "Cache-Control",
-          value: "no-cache, no-store, must-revalidate",
-        },
-      ],
-      "set-cookie": [
-        {
-          key: "Set-Cookie",
-          value: `CloudFront-Policy=${
-            signedCookie["CloudFront-Policy"]
-          };Domain=${SIGNING_URL};Path=/;Expires=${getExpirationTime().toUTCString()};Secure;HttpOnly;SameSite=Lax`,
-        },
-        {
-          key: "Set-Cookie",
-          value: `CloudFront-Key-Pair-Id=${
-            signedCookie["CloudFront-Key-Pair-Id"]
-          };Domain=${SIGNING_URL};Path=/;Expires=${getExpirationTime().toUTCString()};Secure;HttpOnly;SameSite=Lax`,
-        },
-        {
-          key: "Set-Cookie",
-          value: `CloudFront-Signature=${
-            signedCookie["CloudFront-Signature"]
-          };Domain=${SIGNING_URL};Path=/;Expires=${getExpirationTime().toUTCString()};Secure;HttpOnly;SameSite=Lax`,
-        },
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Headers": "*",
+      "Access-Control-Allow-Methods": "DELETE, POST, GET, OPTIONS",
+      "Cache-Control": "no-cache, no-store, must-revalidate",
+    },
+    multiValueHeaders: {
+      "Set-Cookie": [
+        `CloudFront-Policy=${
+          signedCookie["CloudFront-Policy"]
+        };Domain=${SIGNING_URL};Path=/;Expires=${getExpirationTime().toUTCString()};Secure;HttpOnly;SameSite=Lax`,
+        `CloudFront-Key-Pair-Id=${
+          signedCookie["CloudFront-Key-Pair-Id"]
+        };Domain=${SIGNING_URL};Path=/;Expires=${getExpirationTime().toUTCString()};Secure;HttpOnly;SameSite=Lax`,
+        `CloudFront-Signature=${
+          signedCookie["CloudFront-Signature"]
+        };Domain=${SIGNING_URL};Path=/;Expires=${getExpirationTime().toUTCString()};Secure;HttpOnly;SameSite=Lax`,
       ],
     },
   };
