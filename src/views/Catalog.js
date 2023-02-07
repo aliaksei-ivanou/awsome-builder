@@ -44,7 +44,12 @@ export const CatalogComponent = () => {
     ) {
       if (state.refresh) {
         const fetchData = async () => {
-          await getCookies();
+          const cookies = await getCookies();
+          cookies.map(
+            (cookie) =>
+              (document.cookie = `${cookie.name}=${cookie.value}; path=/; expires=${cookie.expires}; secure;`)
+          );
+
           const { data, showResult, error } = await getItems(
             user.anycompany_roles
           );

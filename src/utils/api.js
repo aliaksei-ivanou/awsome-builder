@@ -54,10 +54,7 @@ export const useApiWrapper = () => {
       Authorization: `Bearer ${token}`,
     };
     try {
-      await API.get("signedCookieApi", "/signed-cookie", {
-        headers,
-        withCredentials: true,
-      });
+      return await API.get("signedCookieApi", "/signed-cookie", { headers });
     } catch (error) {
       console.log(error.error);
     }
