@@ -66,7 +66,7 @@ export const CatalogComponent = () => {
         fetchData();
       }
     }
-  }, [state.refresh, user.anycompany_roles, getItems]);
+  }, [state.refresh, user.anycompany_roles, getItems, getCookies]);
 
   return (
     <>

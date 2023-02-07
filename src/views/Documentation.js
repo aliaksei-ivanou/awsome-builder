@@ -14,12 +14,18 @@ export const CatalogComponent = () => {
   });
 
   const { handleConsent, handleLoginAgain, handle } = useAuth0ConsentWrapper();
-  const { getDocumentation } = useApiWrapper();
+  const { getDocumentation, getCookies } = useApiWrapper();
   const { user } = useAuth0();
 
   useEffect(() => {
     if (state.refresh) {
       const fetchData = async () => {
+        const cookies = await getCookies();
+        cookies.map(
+          (cookie) =>
+            (document.cookie = `${cookie.name}=${cookie.value}; path=/; expires=${cookie.expires}; secure;`)
+        );
+
         const { data, showResult, error } = await getDocumentation();
         setState((prevState) => {
           return {
@@ -33,7 +39,7 @@ export const CatalogComponent = () => {
       };
       fetchData();
     }
-  }, [state.refresh, user.anycompany_roles, getDocumentation]);
+  }, [state.refresh, user.anycompany_roles, getDocumentation, getCookies]);
 
   return (
     <>
