@@ -8,13 +8,15 @@ This project is a sample application that demonstrates AWS capabilities. It is a
 
 ![Architecture diagram](Architecture.png)
 
-The application is built using React and AWS Amplify. The identity provider is Auth0.
+The application is built using **React** and **AWS Amplify**. The identity provider is **Auth0**.
 
 The application is deployed to AWS using AWS Amplify Console. The frontend is deployed to an S3 bucket behind Amazon CloudFront, and the backend is deployed to API Gateway endpoints.
 
-When a user authenticates with Auth0, Auth0 issues identity and access tokens containing a custom claim describing the user's roles. The access token is used by the API Gateway Lambda authorizers to authorize API calls to the backend. The identity token is used by the frontend to customize the application's UI based on the user's roles.
+When a user authenticates with Auth0, Auth0 issues identity and access tokens containing a custom claim describing the user's roles. The access token is used by the **Amazon API Gateway Lambda authorizers** to authorize API calls to the backend. The identity token is used by the frontend to customize the application's UI based on the user's roles.
 
-S3 pre-signed URLs are used to upload files.
+**Amazon S3 pre-signed URLs** are used to securely upload widgets documentation to the target S3 bucket.
+
+**Amazon CloudFront Signed Cookies** are used to restrict access to the documentation - only authorized users can access the files. Files are cached at CloudFront edge locations.
 
 ## Available Scripts
 

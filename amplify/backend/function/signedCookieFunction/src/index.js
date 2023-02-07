@@ -4,7 +4,7 @@ const SIGNING_URL = "d30bbnfu0x2i3e.cloudfront.net";
 
 const cache = {};
 
-const loadKeys = async () => {
+const loadParams = async () => {
   const { Parameters } = await new aws.SSM()
     .getParameters({
       Names: ["signerPrivateKey", "signerPublicKey"].map(
@@ -45,14 +45,11 @@ function getSignedCookie(publicKey, privateKey) {
   return cloudFront.getSignedCookie(options);
 }
 
-/**
- * @type {import('@types/aws-lambda').APIGatewayProxyHandler}
- */
 exports.handler = async (event) => {
   console.log(`EVENT: ${JSON.stringify(event)}`);
 
   if (cache.publicKey == null || cache.privateKey == null) {
-    await loadKeys();
+    await loadParams();
   }
 
   const signedCookie = getSignedCookie(

@@ -34,7 +34,7 @@
         },
         "signedCookieFunction": {
           "deploymentBucketName": "amplify-awsomebuilder-dev-125918-deployment",
-          "s3Key": "amplify-builds/signedCookieFunction-496f424a784f444e4846-build.zip",
+          "s3Key": "amplify-builds/signedCookieFunction-663253336132367a5266-build.zip",
           "secretsPathAmplifyAppId": "d9tf1jtl2018m"
         }
       },
