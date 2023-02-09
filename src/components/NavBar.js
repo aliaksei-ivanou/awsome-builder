@@ -16,18 +16,22 @@ import {
   NavLink,
   UncontrolledDropdown,
 } from "reactstrap";
+import { useApiWrapper } from "../utils/api";
 
 const NavBar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const { user, isAuthenticated, loginWithRedirect, logout } = useAuth0();
   const toggle = () => setIsOpen(!isOpen);
+  const { removeCookies } = useApiWrapper();
 
-  const logoutWithRedirect = () =>
+  const logoutWithRedirect = () => {
     logout({
       logoutParams: {
         returnTo: window.location.origin,
       },
     });
+    removeCookies();
+  };
 
   return (
     <div className="nav-container">

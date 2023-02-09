@@ -60,5 +60,26 @@ export const useApiWrapper = () => {
     }
   };
 
-  return { getItems, getOrders, getDocumentation, deleteData, getCookies };
+  const setCookies = async () => {
+    const cookies = await getCookies();
+    cookies.map(
+      (cookie) =>
+        (document.cookie = `${cookie.name}=${cookie.value}; path=/; expires=${cookie.expires}; secure;`)
+    );
+  };
+
+  const removeCookies = async () => {
+    document.cookie.split(";").forEach((c) => {
+      document.cookie = c + "=; Max-Age=0";
+    });
+  };
+
+  return {
+    getItems,
+    getOrders,
+    getDocumentation,
+    deleteData,
+    setCookies,
+    removeCookies,
+  };
 };

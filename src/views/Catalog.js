@@ -15,7 +15,7 @@ export const CatalogComponent = () => {
   });
 
   const { handleConsent, handleLoginAgain, handle } = useAuth0ConsentWrapper();
-  const { getItems, deleteData, getCookies } = useApiWrapper();
+  const { getItems, deleteData, setCookies } = useApiWrapper();
   const { user } = useAuth0();
 
   const handleDelete = async (id) => {
@@ -44,12 +44,7 @@ export const CatalogComponent = () => {
     ) {
       if (state.refresh) {
         const fetchData = async () => {
-          const cookies = await getCookies();
-          cookies.map(
-            (cookie) =>
-              (document.cookie = `${cookie.name}=${cookie.value}; path=/; expires=${cookie.expires}; secure;`)
-          );
-
+          await setCookies();
           const { data, showResult, error } = await getItems(
             user.anycompany_roles
           );
@@ -66,7 +61,7 @@ export const CatalogComponent = () => {
         fetchData();
       }
     }
-  }, [state.refresh, user.anycompany_roles, getItems, getCookies]);
+  }, [state.refresh, user.anycompany_roles, getItems, setCookies]);
 
   return (
     <>
