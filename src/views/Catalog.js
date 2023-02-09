@@ -44,7 +44,13 @@ export const CatalogComponent = () => {
     ) {
       if (state.refresh) {
         const fetchData = async () => {
-          await setCookies();
+          if (
+            !document.cookie.includes("CloudFront-Signature") ||
+            !document.cookie.includes("CloudFront-Key-Pair-Id") ||
+            !document.cookie.includes("CloudFront-Policy")
+          ) {
+            await setCookies();
+          }
           const { data, showResult, error } = await getItems(
             user.anycompany_roles
           );

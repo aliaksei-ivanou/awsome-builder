@@ -20,7 +20,13 @@ export const CatalogComponent = () => {
   useEffect(() => {
     if (state.refresh) {
       const fetchData = async () => {
-        await setCookies();
+        if (
+          !document.cookie.includes("CloudFront-Signature") ||
+          !document.cookie.includes("CloudFront-Key-Pair-Id") ||
+          !document.cookie.includes("CloudFront-Policy")
+        ) {
+          await setCookies();
+        }
         const { data, showResult, error } = await getDocumentation();
         setState((prevState) => {
           return {
