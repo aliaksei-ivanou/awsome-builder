@@ -7,13 +7,7 @@ const Home = () => {
   const { setCookies } = useApiWrapper();
 
   useEffect(() => {
-    if (
-      !document.cookie.includes("CloudFront-Signature") ||
-      !document.cookie.includes("CloudFront-Key-Pair-Id") ||
-      !document.cookie.includes("CloudFront-Policy")
-    ) {
-      setCookies();
-    }
+    setCookies();
   }, []);
 
   return (

@@ -61,11 +61,17 @@ export const useApiWrapper = () => {
   };
 
   const setCookies = async () => {
-    const cookies = await getCookies();
-    cookies.map(
-      (cookie) =>
-        (document.cookie = `${cookie.name}=${cookie.value}; path=/; expires=${cookie.expires}; secure;`)
-    );
+    if (
+      !document.cookie.includes("CloudFront-Signature") ||
+      !document.cookie.includes("CloudFront-Key-Pair-Id") ||
+      !document.cookie.includes("CloudFront-Policy")
+    ) {
+      const cookies = await getCookies();
+      cookies.map(
+        (cookie) =>
+          (document.cookie = `${cookie.name}=${cookie.value}; path=/; expires=${cookie.expires}; secure;`)
+      );
+    }
   };
 
   const removeCookies = async () => {
